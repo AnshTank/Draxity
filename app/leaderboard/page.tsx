@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Trophy, Medal, Award, TrendingUp, Calendar, Users, Star, Crown, Flame } from "lucide-react"
+import { Navigation } from "@/components/navigation"
 
 export default function LeaderboardPage() {
   const weeklyLeaderboard = [
@@ -148,7 +149,9 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-slate-900 p-6">
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-slate-900 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -357,6 +360,7 @@ export default function LeaderboardPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

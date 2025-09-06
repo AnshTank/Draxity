@@ -17,6 +17,7 @@ import {
   CheckCircle,
 } from "lucide-react"
 import Link from "next/link"
+import { Navigation } from "@/components/navigation"
 
 export default function DashboardPage() {
   const userStats = {
@@ -121,7 +122,9 @@ export default function DashboardPage() {
   const xpPercentage = (userStats.xp / (userStats.xp + userStats.xpToNext)) * 100
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-slate-900 p-6">
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-slate-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -383,6 +386,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }
