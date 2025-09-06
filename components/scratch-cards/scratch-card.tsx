@@ -25,7 +25,7 @@ export function ScratchCard() {
   }
 
   if (showEditor) {
-    return <AssessmentEditor />
+    return <AssessmentEditor onBack={() => setShowEditor(false)} />
   }
 
   return (
