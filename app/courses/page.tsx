@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { BookOpen, Code, Clock, Users, Star, Lock, CheckCircle, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { Navigation } from "@/components/navigation"
 
 export default function CoursesPage() {
   const courses = [
@@ -52,7 +53,9 @@ export default function CoursesPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-4xl text-center">
@@ -199,6 +202,7 @@ export default function CoursesPage() {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   )
 }
