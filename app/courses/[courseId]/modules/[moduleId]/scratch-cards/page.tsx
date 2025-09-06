@@ -132,23 +132,31 @@ export default function ScratchCardsPage({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Breadcrumb */}
-      <div className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <Link href="/courses" className="hover:text-foreground">
-              Courses
-            </Link>
-            <span>/</span>
-            <Link href={`/courses/${params.courseId}`} className="hover:text-foreground">
-              DSA Fundamentals
-            </Link>
-            <span>/</span>
-            <Link href={`/courses/${params.courseId}/modules/${params.moduleId}`} className="hover:text-foreground">
-              Arrays & Strings
-            </Link>
-            <span>/</span>
-            <span className="text-foreground font-medium">Scratch Challenge</span>
+      {/* Enhanced Breadcrumb Header */}
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 text-sm">
+              <Link href="/courses" className="text-muted-foreground hover:text-foreground transition-colors">
+                Courses
+              </Link>
+              <span className="text-muted-foreground">/</span>
+              <Link href={`/courses/${params.courseId}`} className="text-muted-foreground hover:text-foreground transition-colors">
+                DSA Fundamentals
+              </Link>
+              <span className="text-muted-foreground">/</span>
+              <Link href={`/courses/${params.courseId}/modules/${params.moduleId}`} className="text-muted-foreground hover:text-foreground transition-colors">
+                Arrays & Strings
+              </Link>
+              <span className="text-muted-foreground">/</span>
+              <span className="text-foreground font-medium">Scratch Challenge</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Badge variant="outline" className="text-xs">
+                <Trophy className="w-3 h-3 mr-1" />
+                Interactive
+              </Badge>
+            </div>
           </div>
         </div>
       </div>

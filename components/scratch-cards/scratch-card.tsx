@@ -29,8 +29,8 @@ export function ScratchCard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-orange-950 dark:to-red-950 p-6 flex items-center justify-center">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-orange-950 dark:to-red-950 p-4 md:p-6 flex items-center justify-center">
+      <div className="w-full max-w-2xl mx-auto">
         {!isScratched ? (
           <Card className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-4 border-yellow-300 dark:border-yellow-600 shadow-2xl">
             <CardHeader className="text-center pb-4">
