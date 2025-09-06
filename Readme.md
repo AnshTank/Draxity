@@ -1,8 +1,8 @@
-# 🚀 Heurix – Next-Gen DSA Learning Platform
+# 🚀 Draxity – Next-Gen DSA Learning Platform
 
-![Heurix Logo](https://via.placeholder.com/200x60.png?text=Heurix+Logo)
+![Draxity Logo](https://via.placeholder.com/200x60.png?text=Draxity+Logo)
 
-Heurix is an **interactive e-learning platform** for mastering **Data Structures & Algorithms (DSA)** through
+Draxity is an **interactive e-learning platform** for mastering **Data Structures & Algorithms (DSA)** through
 
 - 📚 **Interactive Learning** - Comprehensive DSA lessons and tutorials
 - 📝 **Gamified Quizzes** - 10 MCQs per lesson with scratch card rewards
@@ -39,7 +39,7 @@ Heurix is an **interactive e-learning platform** for mastering **Data Structures
 ## 📂 Project Structure
 
 ```bash
-heurix-platform/
+draxity-platform/
 │── app/
 │   ├── page.tsx                    # Home page with hero, features, CTA
 │   ├── practice/
@@ -79,7 +79,7 @@ heurix-platform/
 ```bash
 # Clone repo
 git clone <repo-url>
-cd heurix-platform
+cd draxity-platform
 
 # Install dependencies
 npm install

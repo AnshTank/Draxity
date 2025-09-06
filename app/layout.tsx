@@ -9,7 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Heurix - Master DSA with Interactive Learning",
+  title: "Draxity - Master DSA with Interactive Learning",
   description:
     "The intelligent pathway to mastering Data Structures and Algorithms through structured, gamified learning",
   generator: "v0.app",

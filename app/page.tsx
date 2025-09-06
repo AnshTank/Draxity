@@ -31,7 +31,7 @@ export default function HomePage() {
             Next-Generation Learning Platform
           </Badge>
           <h1 className="text-6xl md:text-8xl font-bold text-foreground mb-8 text-balance leading-tight">
-            Master Programming with <span className="text-blue-600 dark:text-blue-400 font-bold">Heurix</span>
+            Master Programming with <span className="text-blue-600 dark:text-blue-400 font-bold">Draxity</span>
           </h1>
           <p className="text-2xl text-muted-foreground mb-12 text-pretty max-w-3xl mx-auto leading-relaxed">
             The intelligent learning platform that guides you through structured pathways in Data Structures,
@@ -127,7 +127,7 @@ export default function HomePage() {
       {/* Features Section */}
       <section id="features" className="py-32 px-4 bg-background relative z-10">
         <div className="container mx-auto max-w-7xl">
-          <h2 className="text-6xl font-bold text-center mb-8 text-foreground">Why Heurix is Unique</h2>
+          <h2 className="text-6xl font-bold text-center mb-8 text-foreground">Why Draxity is Unique</h2>
           <p className="text-2xl text-muted-foreground text-center mb-24 max-w-3xl mx-auto leading-relaxed">
             Not just a problem bank - it's a guided pathway with gamified learning that makes programming mastery
             inevitable.
@@ -374,7 +374,7 @@ export default function HomePage() {
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
                   <Code className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-2xl font-bold text-foreground">Heurix</span>
+                <span className="text-2xl font-bold text-foreground">Draxity</span>
               </div>
               <p className="text-muted-foreground text-sm leading-relaxed">
                 Master programming through structured learning.
@@ -413,7 +413,7 @@ export default function HomePage() {
           </div>
           
           <div className="border-t border-border mt-8 pt-6 text-center text-muted-foreground text-sm">
-            <p>&copy; 2024 Heurix. All rights reserved.</p>
+            <p>&copy; 2024 Draxity. All rights reserved.</p>
           </div>
         </div>
       </footer>
