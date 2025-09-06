@@ -132,53 +132,66 @@ export default function ScratchCardsPage({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Breadcrumb */}
-      <div className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <Link href="/courses" className="hover:text-foreground">
-              Courses
-            </Link>
-            <span>/</span>
-            <Link href={`/courses/${params.courseId}`} className="hover:text-foreground">
-              DSA Fundamentals
-            </Link>
-            <span>/</span>
-            <Link href={`/courses/${params.courseId}/modules/${params.moduleId}`} className="hover:text-foreground">
-              Arrays & Strings
-            </Link>
-            <span>/</span>
-            <span className="text-foreground font-medium">Scratch Challenge</span>
+      {/* Enhanced Breadcrumb Header */}
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 text-sm">
+              <Link href="/courses" className="text-muted-foreground hover:text-foreground transition-colors">
+                Courses
+              </Link>
+              <span className="text-muted-foreground">/</span>
+              <Link href={`/courses/${params.courseId}`} className="text-muted-foreground hover:text-foreground transition-colors">
+                DSA Fundamentals
+              </Link>
+              <span className="text-muted-foreground">/</span>
+              <Link href={`/courses/${params.courseId}/modules/${params.moduleId}`} className="text-muted-foreground hover:text-foreground transition-colors">
+                Arrays & Strings
+              </Link>
+              <span className="text-muted-foreground">/</span>
+              <span className="text-foreground font-medium">Scratch Challenge</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Badge variant="outline" className="text-xs">
+                <Trophy className="w-3 h-3 mr-1" />
+                Interactive
+              </Badge>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Challenge Header */}
-      <section className="py-8 px-4 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5">
-        <div className="container mx-auto max-w-4xl text-center">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Trophy className="w-8 h-8 text-primary" />
+      {/* Enhanced Challenge Header */}
+      <section className="py-12 px-4 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="container mx-auto max-w-5xl text-center relative">
+          <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg animate-pulse">
+            <Trophy className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-4">{scratchCards.title}</h1>
-          <p className="text-xl text-muted-foreground mb-6 max-w-2xl mx-auto">{scratchCards.description}</p>
+          <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            {scratchCards.title}
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
+            {scratchCards.description}
+          </p>
 
-          <div className="flex justify-center space-x-8 mb-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">{scratchCards.totalCards}</div>
+          <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto mb-8">
+            <div className="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl backdrop-blur-sm border border-primary/20">
+              <div className="text-3xl font-bold text-primary mb-1">{scratchCards.totalCards}</div>
               <div className="text-sm text-muted-foreground">Mystery Cards</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-accent">370</div>
+            <div className="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl backdrop-blur-sm border border-accent/20">
+              <div className="text-3xl font-bold text-accent mb-1">370</div>
               <div className="text-sm text-muted-foreground">Total Points</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">90</div>
+            <div className="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl backdrop-blur-sm border border-primary/20">
+              <div className="text-3xl font-bold text-primary mb-1">90</div>
               <div className="text-sm text-muted-foreground">Time Limit (min)</div>
             </div>
           </div>
 
           <Link href={`/courses/${params.courseId}/modules/${params.moduleId}`}>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="lg" className="shadow-md hover:shadow-lg transition-all">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Module
             </Button>
@@ -229,8 +242,8 @@ export default function ScratchCardsPage({
       </section>
 
       {/* Scratch Card Interface */}
-      <section className="py-12 px-4">
-        <div className="container mx-auto max-w-6xl">
+      <section className="py-8 px-4 pb-12">
+        <div className="container mx-auto max-w-7xl">
           <ScratchCardInterface
             problems={scratchCards.problems}
             courseId={params.courseId}
