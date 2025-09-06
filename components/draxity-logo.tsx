@@ -1,4 +1,4 @@
-export function HeurixLogo({ className = "w-8 h-8" }: { className?: string }) {
+export function DraxityLogo({ className = "w-8 h-8" }: { className?: string }) {
   return (
     <div className={`${className} relative`}>
       <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
@@ -31,9 +31,9 @@ export function HeurixLogo({ className = "w-8 h-8" }: { className?: string }) {
         <line x1="8" y1="24" x2="16" y2="16" stroke="white" strokeWidth="1.5" opacity="0.8" />
         <line x1="24" y1="24" x2="16" y2="16" stroke="white" strokeWidth="1.5" opacity="0.8" />
 
-        {/* Central H for Heurix */}
+        {/* Central D for Draxity */}
         <text x="16" y="20" textAnchor="middle" fill="#1E293B" fontSize="8" fontWeight="bold" fontFamily="system-ui">
-          H
+          D
         </text>
       </svg>
     </div>
