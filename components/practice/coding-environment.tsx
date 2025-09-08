@@ -20,32 +20,135 @@ import {
 } from "lucide-react";
 
 const languages = [
-  { id: "c", name: "C", icon: "🔧", template: '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}' },
-  { id: "cpp", name: "C++", icon: "⚡", template: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}' },
-  { id: "java", name: "Java", icon: "☕", template: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}' },
-  { id: "python", name: "Python", icon: "🐍", template: '# Python program\nprint("Hello, World!")' },
-  { id: "javascript", name: "JavaScript", icon: "📜", template: '// JavaScript program\nconsole.log("Hello, World!");' },
-  { id: "csharp", name: "C#", icon: "#️⃣", template: 'using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, World!");\n    }\n}' },
-  { id: "go", name: "Go", icon: "🔷", template: 'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, World!")\n}' },
-  { id: "php", name: "PHP", icon: "🌐", template: '<?php\necho "Hello, World!";\n?>' },
-  { id: "kotlin", name: "Kotlin", icon: "🔶", template: 'fun main() {\n    println("Hello, World!")\n}' },
-  { id: "rust", name: "Rust", icon: "⚙️", template: 'fn main() {\n    println!("Hello, World!");\n}' },
-  { id: "swift", name: "Swift", icon: "🍎", template: 'import Foundation\n\nprint("Hello, World!")' },
-  { id: "ruby", name: "Ruby", icon: "💎", template: '# Ruby program\nputs "Hello, World!"' },
-  { id: "scala", name: "Scala", icon: "🔴", template: 'object Main {\n  def main(args: Array[String]): Unit = {\n    println("Hello, World!")\n  }\n}' },
-  { id: "dart", name: "Dart", icon: "🎯", template: 'void main() {\n  print("Hello, World!");\n}' },
-  { id: "typescript", name: "TypeScript", icon: "📘", template: '// TypeScript program\nconsole.log("Hello, World!");' },
-  { id: "r", name: "R", icon: "📊", template: '# R program\nprint("Hello, World!")' },
-  { id: "perl", name: "Perl", icon: "🐪", template: '#!/usr/bin/perl\nprint "Hello, World!\\n";' },
-  { id: "lua", name: "Lua", icon: "🌙", template: '-- Lua program\nprint("Hello, World!")' },
-  { id: "haskell", name: "Haskell", icon: "λ", template: 'main :: IO ()\nmain = putStrLn "Hello, World!"' }
+  {
+    id: "c",
+    name: "C",
+    icon: "🔧",
+    template:
+      '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}',
+  },
+  {
+    id: "cpp",
+    name: "C++",
+    icon: "⚡",
+    template:
+      '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}',
+  },
+  {
+    id: "java",
+    name: "Java",
+    icon: "☕",
+    template:
+      'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+  },
+  {
+    id: "python",
+    name: "Python",
+    icon: "🐍",
+    template: '# Python program\nprint("Hello, World!")',
+  },
+  {
+    id: "javascript",
+    name: "JavaScript",
+    icon: "📜",
+    template: '// JavaScript program\nconsole.log("Hello, World!");',
+  },
+  {
+    id: "csharp",
+    name: "C#",
+    icon: "#️⃣",
+    template:
+      'using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, World!");\n    }\n}',
+  },
+  {
+    id: "go",
+    name: "Go",
+    icon: "🔷",
+    template:
+      'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, World!")\n}',
+  },
+  {
+    id: "php",
+    name: "PHP",
+    icon: "🌐",
+    template: '<?php\necho "Hello, World!";\n?>',
+  },
+  {
+    id: "kotlin",
+    name: "Kotlin",
+    icon: "🔶",
+    template: 'fun main() {\n    println("Hello, World!")\n}',
+  },
+  {
+    id: "rust",
+    name: "Rust",
+    icon: "⚙️",
+    template: 'fn main() {\n    println!("Hello, World!");\n}',
+  },
+  {
+    id: "swift",
+    name: "Swift",
+    icon: "🍎",
+    template: 'import Foundation\n\nprint("Hello, World!")',
+  },
+  {
+    id: "ruby",
+    name: "Ruby",
+    icon: "💎",
+    template: '# Ruby program\nputs "Hello, World!"',
+  },
+  {
+    id: "scala",
+    name: "Scala",
+    icon: "🔴",
+    template:
+      'object Main {\n  def main(args: Array[String]): Unit = {\n    println("Hello, World!")\n  }\n}',
+  },
+  {
+    id: "dart",
+    name: "Dart",
+    icon: "🎯",
+    template: 'void main() {\n  print("Hello, World!");\n}',
+  },
+  {
+    id: "typescript",
+    name: "TypeScript",
+    icon: "📘",
+    template: '// TypeScript program\nconsole.log("Hello, World!");',
+  },
+  {
+    id: "r",
+    name: "R",
+    icon: "📊",
+    template: '# R program\nprint("Hello, World!")',
+  },
+  {
+    id: "perl",
+    name: "Perl",
+    icon: "🐪",
+    template: '#!/usr/bin/perl\nprint "Hello, World!\\n";',
+  },
+  {
+    id: "lua",
+    name: "Lua",
+    icon: "🌙",
+    template: '-- Lua program\nprint("Hello, World!")',
+  },
+  {
+    id: "haskell",
+    name: "Haskell",
+    icon: "λ",
+    template: 'main :: IO ()\nmain = putStrLn "Hello, World!"',
+  },
 ];
 
 interface CodingEnvironmentProps {
   onFullscreenChange?: (isFullscreen: boolean) => void;
 }
 
-export function CodingEnvironment({ onFullscreenChange }: CodingEnvironmentProps = {}) {
+export function CodingEnvironment({
+  onFullscreenChange,
+}: CodingEnvironmentProps = {}) {
   const [selectedLanguage, setSelectedLanguage] = useState("cpp");
   const [code, setCode] = useState(languages[0].template);
   const [input, setInput] = useState("");
@@ -111,14 +214,14 @@ export function CodingEnvironment({ onFullscreenChange }: CodingEnvironmentProps
         await document.documentElement.requestFullscreen();
         setIsFullscreen(true);
       } catch (err) {
-        console.error('Error attempting to enable fullscreen:', err);
+        console.error("Error attempting to enable fullscreen:", err);
       }
     } else {
       try {
         await document.exitFullscreen();
         setIsFullscreen(false);
       } catch (err) {
-        console.error('Error attempting to exit fullscreen:', err);
+        console.error("Error attempting to exit fullscreen:", err);
       }
     }
   };
@@ -154,19 +257,19 @@ export function CodingEnvironment({ onFullscreenChange }: CodingEnvironmentProps
     };
 
     const handleEscKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isFullscreen) {
+      if (e.key === "Escape" && isFullscreen) {
         e.preventDefault();
         e.stopPropagation();
         toggleFullscreen();
       }
     };
 
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('keydown', handleEscKey, { capture: true });
-    
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("keydown", handleEscKey, { capture: true });
+
     return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      document.removeEventListener('keydown', handleEscKey, { capture: true });
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("keydown", handleEscKey, { capture: true });
     };
   }, [isFullscreen, onFullscreenChange]);
 
@@ -213,8 +316,8 @@ export function CodingEnvironment({ onFullscreenChange }: CodingEnvironmentProps
               : "bg-gray-50 border-gray-200"
           }`}
           style={{
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none'
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
           }}
         >
           <div className="py-4 space-y-4 px-2">
@@ -231,7 +334,9 @@ export function CodingEnvironment({ onFullscreenChange }: CodingEnvironmentProps
                 }`}
                 title={lang.name}
               >
-                <span className="text-2xl mb-1 filter grayscale">{lang.icon}</span>
+                <span className="text-2xl mb-1 filter grayscale">
+                  {lang.icon}
+                </span>
                 <span className="text-xs leading-tight">{lang.name}</span>
               </button>
             ))}

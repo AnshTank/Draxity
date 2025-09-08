@@ -1,14 +1,19 @@
-"use client"
-
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { BookOpen, Clock, CheckCircle, ArrowRight, Play, Lock, Star, Target, ArrowLeft, Sun, Moon } from "lucide-react"
-import Link from "next/link"
-import { notFound } from "next/navigation"
-import { useTheme } from "next-themes"
-import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  BookOpen,
+  Clock,
+  CheckCircle,
+  ArrowRight,
+  Play,
+  Lock,
+  Star,
+  Target,
+} from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 // Mock data - would come from database/API
 const moduleData = {
@@ -16,7 +21,8 @@ const moduleData = {
     "1": {
       id: 1,
       title: "Arrays & Strings",
-      description: "Learn fundamental array operations and string manipulation techniques",
+      description:
+        "Learn fundamental array operations and string manipulation techniques",
       progress: 75,
       totalLessons: 8,
       completedLessons: 6,
@@ -25,7 +31,8 @@ const moduleData = {
         {
           id: 1,
           title: "Introduction to Arrays",
-          description: "Understanding array data structure and basic operations",
+          description:
+            "Understanding array data structure and basic operations",
           type: "concept",
           duration: "15 min",
           status: "completed",
@@ -52,7 +59,8 @@ const moduleData = {
         {
           id: 4,
           title: "Sliding Window Pattern",
-          description: "Learn the sliding window technique for subarray problems",
+          description:
+            "Learn the sliding window technique for subarray problems",
           type: "interactive",
           duration: "30 min",
           status: "completed",
@@ -88,59 +96,59 @@ const moduleData = {
         {
           id: 8,
           title: "Arrays & Strings Quiz",
-          description: "Test your understanding before moving to practice problems",
+          description:
+            "Test your understanding before moving to practice problems",
           type: "quiz",
           duration: "20 min",
           status: "locked",
-          topics: ["Comprehensive Review", "Problem Solving", "Concept Application"],
+          topics: [
+            "Comprehensive Review",
+            "Problem Solving",
+            "Concept Application",
+          ],
         },
       ],
     },
   },
-}
+};
 
 export default function ModulePage({
   params,
 }: {
-  params: { courseId: string; moduleId: string }
+  params: { courseId: string; moduleId: string };
 }) {
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
   const module =
     moduleData[params.courseId as keyof typeof moduleData]?.[
       params.moduleId as keyof (typeof moduleData)[keyof typeof moduleData]
-    ]
+    ];
 
   if (!module) {
-    notFound()
+    notFound();
   }
 
   const getStatusIcon = (status: string, type: string) => {
-    if (status === "completed") return <CheckCircle className="w-5 h-5 text-accent" />
-    if (status === "current") return <Play className="w-5 h-5 text-primary" />
-    if (status === "locked") return <Lock className="w-5 h-5 text-muted-foreground" />
-    return <BookOpen className="w-5 h-5 text-muted-foreground" />
-  }
+    if (status === "completed")
+      return <CheckCircle className="w-5 h-5 text-accent" />;
+    if (status === "current") return <Play className="w-5 h-5 text-primary" />;
+    if (status === "locked")
+      return <Lock className="w-5 h-5 text-muted-foreground" />;
+    return <BookOpen className="w-5 h-5 text-muted-foreground" />;
+  };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "concept":
-        return <BookOpen className="w-4 h-4" />
+        return <BookOpen className="w-4 h-4" />;
       case "interactive":
-        return <Play className="w-4 h-4" />
+        return <Play className="w-4 h-4" />;
       case "visualization":
-        return <Target className="w-4 h-4" />
+        return <Target className="w-4 h-4" />;
       case "quiz":
-        return <Star className="w-4 h-4" />
+        return <Star className="w-4 h-4" />;
       default:
-        return <BookOpen className="w-4 h-4" />
+        return <BookOpen className="w-4 h-4" />;
     }
-  }
+  };
 
   const getTypeBadge = (type: string) => {
     const variants = {
@@ -148,43 +156,29 @@ export default function ModulePage({
       interactive: "secondary",
       visualization: "outline",
       quiz: "destructive",
-    } as const
+    } as const;
 
-    return variants[type as keyof typeof variants] || "default"
-  }
+    return variants[type as keyof typeof variants] || "default";
+  };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header with Back Button and Theme Toggle */}
+      {/* Breadcrumb */}
       <div className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href={`/courses/${params.courseId}`}>
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Course
-                </Button>
-              </Link>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <Link href="/courses" className="hover:text-foreground">
-                  Courses
-                </Link>
-                <span>/</span>
-                <Link href={`/courses/${params.courseId}`} className="hover:text-foreground">
-                  DSA Fundamentals
-                </Link>
-                <span>/</span>
-                <span className="text-foreground font-medium">{module.title}</span>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <Link href="/courses" className="hover:text-foreground">
+              Courses
+            </Link>
+            <span>/</span>
+            <Link
+              href={`/courses/${params.courseId}`}
+              className="hover:text-foreground"
             >
-              {mounted && (theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
-            </Button>
+              DSA Fundamentals
+            </Link>
+            <span>/</span>
+            <span className="text-foreground font-medium">{module.title}</span>
           </div>
         </div>
       </div>
@@ -216,7 +210,9 @@ export default function ModulePage({
             </div>
 
             <div className="text-right">
-              <div className="text-2xl font-bold text-primary mb-1">{module.progress}%</div>
+              <div className="text-2xl font-bold text-primary mb-1">
+                {module.progress}%
+              </div>
               <div className="text-sm text-muted-foreground">Complete</div>
             </div>
           </div>
@@ -240,8 +236,8 @@ export default function ModulePage({
                   lesson.status === "current"
                     ? "border-primary/40 bg-primary/5"
                     : lesson.status === "completed"
-                      ? "border-accent/40 bg-accent/5"
-                      : "border-border"
+                    ? "border-accent/40 bg-accent/5"
+                    : "border-border"
                 }`}
               >
                 <CardContent className="p-6">
@@ -252,8 +248,8 @@ export default function ModulePage({
                           lesson.status === "completed"
                             ? "bg-accent text-accent-foreground"
                             : lesson.status === "current"
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted text-muted-foreground"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground"
                         }`}
                       >
                         {getStatusIcon(lesson.status, lesson.type)}
@@ -264,13 +260,20 @@ export default function ModulePage({
                           <h3 className="font-semibold text-foreground">
                             Lesson {lesson.id}: {lesson.title}
                           </h3>
-                          <Badge variant={getTypeBadge(lesson.type)} className="text-xs">
-                            <span className="mr-1">{getTypeIcon(lesson.type)}</span>
+                          <Badge
+                            variant={getTypeBadge(lesson.type)}
+                            className="text-xs"
+                          >
+                            <span className="mr-1">
+                              {getTypeIcon(lesson.type)}
+                            </span>
                             {lesson.type}
                           </Badge>
                         </div>
 
-                        <p className="text-muted-foreground text-sm mb-3">{lesson.description}</p>
+                        <p className="text-muted-foreground text-sm mb-3">
+                          {lesson.description}
+                        </p>
 
                         <div className="flex items-center space-x-4 text-xs text-muted-foreground mb-3">
                           <div className="flex items-center">
@@ -282,7 +285,11 @@ export default function ModulePage({
 
                         <div className="flex flex-wrap gap-2">
                           {lesson.topics.map((topic, topicIndex) => (
-                            <Badge key={topicIndex} variant="outline" className="text-xs">
+                            <Badge
+                              key={topicIndex}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {topic}
                             </Badge>
                           ))}
@@ -297,13 +304,22 @@ export default function ModulePage({
                           Locked
                         </Button>
                       ) : (
-                        <Link href={`/courses/${params.courseId}/modules/${params.moduleId}/lessons/${lesson.id}`}>
-                          <Button size="sm" variant={lesson.status === "completed" ? "outline" : "default"}>
+                        <Link
+                          href={`/courses/${params.courseId}/modules/${params.moduleId}/lessons/${lesson.id}`}
+                        >
+                          <Button
+                            size="sm"
+                            variant={
+                              lesson.status === "completed"
+                                ? "outline"
+                                : "default"
+                            }
+                          >
                             {lesson.status === "completed"
                               ? "Review"
                               : lesson.status === "current"
-                                ? "Continue"
-                                : "Start"}
+                              ? "Continue"
+                              : "Start"}
                             <ArrowRight className="ml-2 w-4 h-4" />
                           </Button>
                         </Link>
@@ -317,5 +333,5 @@ export default function ModulePage({
         </div>
       </section>
     </div>
-  )
+  );
 }

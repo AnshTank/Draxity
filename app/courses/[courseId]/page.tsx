@@ -184,7 +184,7 @@ export default function CoursePage({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* <Navigation /> */}
+      <Navigation />
       {/* Back Navigation */}
       <div className="px-4 pt-4">
         <div className="container mx-auto max-w-6xl">
@@ -317,10 +317,12 @@ export default function CoursePage({
                     </div>
                   </div>
 
-                  <Button className="w-full mt-4">
-                    Continue Learning
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
+                  <Link href={`/courses/${course.id}/modules/1`}>
+                    <Button className="w-full mt-4">
+                      Continue Learning
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
 
