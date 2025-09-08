@@ -1,16 +1,13 @@
-"use client";
-
-import { useState } from "react";
-import { CodingEnvironment } from "@/components/practice/coding-environment";
-import { Navigation } from "@/components/navigation";
+import { CodingEnvironment } from "@/components/practice/coding-environment"
+import { Navigation } from "@/components/navigation"
 
 export default function PracticePage() {
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
   return (
     <>
-      {!isFullscreen && <Navigation />}
-      <CodingEnvironment onFullscreenChange={setIsFullscreen} />
+      <Navigation />
+      <div className="min-h-screen bg-gray-900">
+        <CodingEnvironment />
+      </div>
     </>
-  );
+  )
 }
