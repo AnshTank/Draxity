@@ -11,6 +11,7 @@ import {
   Lock,
   CheckCircle,
   ArrowRight,
+  ArrowLeft,
   Play,
   Trophy,
   Target,
@@ -183,7 +184,21 @@ export default function CoursePage({
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      {/* <Navigation /> */}
+      {/* Back Navigation */}
+      <div className="px-4 pt-4">
+        <div className="container mx-auto max-w-6xl">
+          <Link
+            href="/courses"
+            className="inline-flex items-center p-2 hover:bg-muted rounded-lg transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2 text-muted-foreground hover:text-foreground" />
+            <span className="text-sm text-muted-foreground hover:text-foreground">
+              Back to Courses
+            </span>
+          </Link>
+        </div>
+      </div>
       {/* Course Header */}
       <section className="py-16 px-4 bg-card">
         <div className="container mx-auto max-w-6xl">
