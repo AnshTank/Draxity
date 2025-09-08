@@ -228,8 +228,8 @@ export function QuizInterface() {
   if (showResults) {
     const passed = score >= passingScore;
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 px-6 pt-4">
-        <div className="max-w-2xl mx-auto">
+      <div className="h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 px-6 pt-4 overflow-hidden">
+        <div className="max-w-2xl mx-auto h-full overflow-y-auto">
           <div className="relative">
             {/* Floating decorative elements */}
             <div className="absolute -top-4 -left-4 w-8 h-8 bg-purple-400/20 rounded-full blur-sm"></div>
@@ -328,8 +328,8 @@ export function QuizInterface() {
 
   if (showReview) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 px-6 pt-4">
-        <div className="max-w-4xl mx-auto">
+      <div className="h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 px-6 pt-4 overflow-hidden">
+        <div className="max-w-4xl mx-auto h-full overflow-y-auto">
           <div className="mb-6 flex items-center justify-between">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
               Quiz Review
@@ -405,9 +405,9 @@ export function QuizInterface() {
 
   if (!isHydrated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 px-6 pt-2">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-6">
+      <div className="h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 px-6 pt-2 overflow-hidden">
+        <div className="max-w-4xl mx-auto h-full overflow-y-auto">
+          <div className="mb-6 mt-4">
             <div className="h-16 bg-gradient-to-r from-purple-200 to-indigo-200 dark:from-purple-800 dark:to-indigo-800 rounded-lg animate-pulse mb-4"></div>
             <div className="h-3 bg-purple-100 dark:bg-purple-900 rounded-full animate-pulse"></div>
           </div>
@@ -418,8 +418,8 @@ export function QuizInterface() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 px-6 pt-2">
-      <div className="max-w-4xl mx-auto">
+    <div className="h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 px-6 pt-2 overflow-hidden">
+      <div className="max-w-4xl mx-auto h-full overflow-y-auto">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <div>

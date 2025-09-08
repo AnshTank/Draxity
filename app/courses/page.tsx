@@ -72,7 +72,7 @@ export default function CoursesPage() {
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {courses.map((course) => (
-              <Card key={course.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <Card key={course.id} className="overflow-hidden hover:shadow-lg transition-shadow flex flex-col" style={{minHeight: '500px'}}>
                 <div className="aspect-video bg-muted relative overflow-hidden">
                   <img
                     src={course.image || "/placeholder.svg"}
@@ -89,70 +89,56 @@ export default function CoursesPage() {
                   )}
                 </div>
 
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg mb-2">{course.title}</CardTitle>
-                      <CardDescription className="text-sm">{course.description}</CardDescription>
-                    </div>
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between mb-2">
+                    <CardTitle className="text-lg flex-1">{course.title}</CardTitle>
                     <Badge variant={course.status === "available" ? "default" : "secondary"}>{course.level}</Badge>
                   </div>
+                  <CardDescription className="text-sm h-10 flex items-start">{course.description}</CardDescription>
                 </CardHeader>
 
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <div className="flex items-center">
+                <CardContent className="space-y-3 flex-1 flex flex-col pt-0">
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="flex items-center text-muted-foreground">
                       <Clock className="w-4 h-4 mr-1" />
                       {course.duration}
                     </div>
                     <div className="flex items-center">
-                      <Users className="w-4 h-4 mr-1" />
-                      {course.students} students
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center">
                       <Star className="w-4 h-4 text-yellow-500 mr-1" />
                       <span className="font-medium">{course.rating}</span>
                     </div>
-                    <div className="text-muted-foreground">
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 text-sm text-muted-foreground">
+                    <div className="flex items-center">
+                      <Users className="w-4 h-4 mr-1" />
+                      {course.students} students
+                    </div>
+                    <div>
                       {course.modules} modules • {course.problems} problems
                     </div>
                   </div>
 
-                  {course.progress > 0 && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Progress</span>
-                        <span className="font-medium">{course.progress}%</span>
-                      </div>
-                      <Progress value={course.progress} className="h-2" />
-                    </div>
-                  )}
-
-                  <div className="pt-2">
-                    {course.status === "available" ? (
-                      <div className="space-y-2">
-                        <Link href={`/courses/${course.id}`}>
-                          <Button className="w-full">
-                            {course.progress > 0 ? "Continue Learning" : "Start Course"}
-                            <ArrowRight className="ml-2 w-4 h-4" />
-                          </Button>
-                        </Link>
-                        <div className="flex gap-2">
-                          <Link href="/practice" className="flex-1">
-                            <Button variant="outline" size="sm" className="w-full">
-                              Practice Editor
-                            </Button>
-                          </Link>
-                          <Link href="/quiz" className="flex-1">
-                            <Button variant="outline" size="sm" className="w-full">
-                              Quiz Demo
-                            </Button>
-                          </Link>
+                  <div className="h-12 flex items-start">
+                    {course.progress > 0 && (
+                      <div className="space-y-2 w-full">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Progress</span>
+                          <span className="font-medium">{course.progress}%</span>
                         </div>
+                        <Progress value={course.progress} className="h-2" />
                       </div>
+                    )}
+                  </div>
+
+                  <div className="mt-auto">
+                    {course.status === "available" ? (
+                      <Link href={`/courses/${course.id}`}>
+                        <Button className="w-full">
+                          {course.progress > 0 ? "Continue Learning" : "Start Course"}
+                          <ArrowRight className="ml-2 w-4 h-4" />
+                        </Button>
+                      </Link>
                     ) : (
                       <Button disabled className="w-full">
                         <Lock className="mr-2 w-4 h-4" />
@@ -170,7 +156,7 @@ export default function CoursesPage() {
       {/* Features Section */}
       <section className="py-16 px-4 bg-card">
         <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl font-bold mb-6 text-foreground">Why Choose Heurix Courses?</h2>
+          <h2 className="text-3xl font-bold mb-6 text-foreground">Why Choose Draxity Courses?</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="space-y-3">
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">

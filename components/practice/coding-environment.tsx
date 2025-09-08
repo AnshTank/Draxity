@@ -48,6 +48,7 @@ export function CodingEnvironment() {
     setIsRunning(true)
     setTimeout(() => {
       setOutput(`Compiling and running ${languages.find(l => l.id === selectedLanguage)?.name}...\n\nHello, World!\n\nProcess finished with exit code 0\nExecution time: 0.15s\nMemory used: 1.2 MB`)
+      setActiveTab('output')
       setIsRunning(false)
     }, 2000)
   }
