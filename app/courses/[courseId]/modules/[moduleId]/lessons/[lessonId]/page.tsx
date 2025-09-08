@@ -1161,6 +1161,153 @@ public class ArrayStringTechniques {
           content:
             "Mastering arrays and strings is like learning to read and write - they're fundamental skills that enable you to tackle more complex problems. Each technique is a tool in your programming toolkit.",
         },
+        nextLesson: "8",
+      },
+      "8": {
+        id: "8",
+        title: "Lesson 8: Module Review & Preparation",
+        overview:
+          "Comprehensive review of all array and string concepts before taking the final quiz and coding assessment.",
+        theory: {
+          sections: [
+            {
+              heading: "Key Concepts Review",
+              content:
+                "We've covered array basics, operations, two pointers, sliding window, string fundamentals, pattern matching, and advanced operations. Each concept builds upon the previous ones.",
+            },
+            {
+              heading: "Problem-Solving Strategies",
+              content:
+                "When approaching array/string problems: identify the pattern, choose the right technique (two pointers, sliding window, etc.), consider time/space complexity, and test with examples.",
+            },
+            {
+              heading: "Common Pitfalls",
+              content:
+                "Watch out for off-by-one errors, array bounds, null/empty inputs, and integer overflow. Always validate your approach with edge cases before implementing.",
+            },
+          ],
+        },
+        diagram: {
+          title: "Technique Selection Guide",
+          content: `Problem Type → Recommended Technique
+
+• Find pair with sum → Two Pointers
+• Subarray with condition → Sliding Window  
+• Pattern in string → Pattern Matching
+• Rotate/reverse → In-place Operations
+• Merge sorted data → Merge Technique
+• Search in array → Binary Search (if sorted)
+• Multiple operations → Choose based on frequency`,
+        },
+        codeExamples: {
+          cpp: `// Summary of key techniques
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+class ArrayStringTechniques {
+public:
+    // Two Pointers: Find pair with target sum
+    bool twoSum(vector<int>& arr, int target) {
+        int left = 0, right = arr.size() - 1;
+        while (left < right) {
+            int sum = arr[left] + arr[right];
+            if (sum == target) return true;
+            else if (sum < target) left++;
+            else right--;
+        }
+        return false;
+    }
+    
+    // Sliding Window: Max sum subarray of size k
+    int maxSumSubarray(vector<int>& arr, int k) {
+        int windowSum = 0, maxSum = 0;
+        for (int i = 0; i < k; i++) windowSum += arr[i];
+        maxSum = windowSum;
+        
+        for (int i = k; i < arr.size(); i++) {
+            windowSum = windowSum - arr[i-k] + arr[i];
+            maxSum = max(maxSum, windowSum);
+        }
+        return maxSum;
+    }
+};`,
+          python: `# Summary of key techniques
+
+class ArrayStringTechniques:
+    def two_sum(self, arr, target):
+        """Two Pointers: Find pair with target sum"""
+        left, right = 0, len(arr) - 1
+        while left < right:
+            current_sum = arr[left] + arr[right]
+            if current_sum == target:
+                return True
+            elif current_sum < target:
+                left += 1
+            else:
+                right -= 1
+        return False
+    
+    def max_sum_subarray(self, arr, k):
+        """Sliding Window: Max sum subarray of size k"""
+        window_sum = sum(arr[:k])
+        max_sum = window_sum
+        
+        for i in range(k, len(arr)):
+            window_sum = window_sum - arr[i-k] + arr[i]
+            max_sum = max(max_sum, window_sum)
+        
+        return max_sum
+
+# Example usage
+techniques = ArrayStringTechniques()
+print("All techniques ready for quiz!")`,
+          java: `// Summary of key techniques
+import java.util.*;
+
+public class ArrayStringTechniques {
+    // Two Pointers: Find pair with target sum
+    public boolean twoSum(int[] arr, int target) {
+        int left = 0, right = arr.length - 1;
+        while (left < right) {
+            int sum = arr[left] + arr[right];
+            if (sum == target) return true;
+            else if (sum < target) left++;
+            else right--;
+        }
+        return false;
+    }
+    
+    // Sliding Window: Max sum subarray of size k
+    public int maxSumSubarray(int[] arr, int k) {
+        int windowSum = 0;
+        for (int i = 0; i < k; i++) windowSum += arr[i];
+        int maxSum = windowSum;
+        
+        for (int i = k; i < arr.length; i++) {
+            windowSum = windowSum - arr[i-k] + arr[i];
+            maxSum = Math.max(maxSum, windowSum);
+        }
+        return maxSum;
+    }
+    
+    public static void main(String[] args) {
+        System.out.println("All techniques ready for quiz!");
+    }
+}`,
+        },
+        timeComplexity: [
+          { operation: "Two Pointers", complexity: "O(n)" },
+          { operation: "Sliding Window", complexity: "O(n)" },
+          { operation: "Pattern Matching", complexity: "O(n*m)" },
+          { operation: "Array Operations", complexity: "O(n)" },
+        ],
+        analogy: {
+          title: "Final Thoughts",
+          content:
+            "Mastering arrays and strings is like learning to read and write - they're fundamental skills that enable you to tackle more complex problems. Each technique is a tool in your programming toolkit.",
+        },
         nextLesson: null,
       },
     },

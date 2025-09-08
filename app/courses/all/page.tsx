@@ -15,14 +15,14 @@ import {
   Users,
   Star,
   Lock,
-  CheckCircle,
   ArrowRight,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import { Navigation } from "@/components/navigation";
 
-export default function CoursesPage() {
-  const courses = [
+export default function AllCoursesPage() {
+  const allCourses = [
     {
       id: "dsa-fundamentals",
       title: "Data Structures & Algorithms",
@@ -67,31 +67,79 @@ export default function CoursesPage() {
       status: "coming-soon",
       image: "/database-management-systems.jpg",
     },
+    {
+      id: "web-development",
+      title: "Full Stack Web Development",
+      description: "Build modern web applications with React, Node.js, and databases",
+      level: "Intermediate",
+      duration: "10-14 weeks",
+      students: "3,245",
+      rating: 4.9,
+      progress: 0,
+      modules: 12,
+      problems: 200,
+      status: "coming-soon",
+      image: "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=400&h=225&fit=crop",
+    },
+    {
+      id: "machine-learning",
+      title: "Machine Learning Fundamentals",
+      description: "Learn ML algorithms, data preprocessing, and model evaluation",
+      level: "Advanced",
+      duration: "12-16 weeks",
+      students: "1,876",
+      rating: 4.8,
+      progress: 0,
+      modules: 10,
+      problems: 180,
+      status: "coming-soon",
+      image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=225&fit=crop",
+    },
+    {
+      id: "system-design",
+      title: "System Design & Architecture",
+      description: "Design scalable systems and understand distributed architectures",
+      level: "Advanced",
+      duration: "8-10 weeks",
+      students: "1,234",
+      rating: 4.7,
+      progress: 0,
+      modules: 8,
+      problems: 100,
+      status: "coming-soon",
+      image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=225&fit=crop",
+    },
   ];
 
   return (
     <>
       <Navigation />
       <div className="min-h-screen bg-background">
-        {/* Hero Section */}
-        <section className="py-16 px-4">
-          <div className="container mx-auto max-w-4xl text-center">
+        {/* Header */}
+        <section className="py-16 px-4 bg-card">
+          <div className="container mx-auto max-w-6xl">
+            <Link href="/courses" className="inline-flex items-center mb-6 p-2 hover:bg-muted rounded-lg transition-colors">
+              <ArrowLeft className="w-5 h-5 mr-2 text-muted-foreground hover:text-foreground" />
+              <span className="text-sm text-muted-foreground hover:text-foreground">
+                Back to Featured Courses
+              </span>
+            </Link>
+            
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Choose Your Learning Path
+              All Courses
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Start with our flagship DSA course or explore other computer
-              science fundamentals. Each course follows our proven structured
-              learning methodology.
+            <p className="text-xl text-muted-foreground max-w-2xl">
+              Explore our complete catalog of programming and computer science courses.
+              From beginner-friendly introductions to advanced topics.
             </p>
           </div>
         </section>
 
-        {/* Courses Grid */}
-        <section className="py-8 px-4">
+        {/* All Courses Grid */}
+        <section className="py-12 px-4">
           <div className="container mx-auto max-w-6xl">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {courses.map((course) => (
+              {allCourses.map((course) => (
                 <Card
                   key={course.id}
                   className="overflow-hidden hover:shadow-lg transition-shadow flex flex-col"
@@ -191,61 +239,6 @@ export default function CoursesPage() {
                   </CardContent>
                 </Card>
               ))}
-            </div>
-            
-            {/* More Courses Button */}
-            <div className="text-center mt-12">
-              <Link href="/courses/all">
-                <Button variant="outline" size="lg" className="px-8">
-                  View All Courses
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="py-16 px-4 bg-card">
-          <div className="container mx-auto max-w-4xl text-center">
-            <h2 className="text-3xl font-bold mb-6 text-foreground">
-              Why Choose Draxity Courses?
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="space-y-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
-                  <BookOpen className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-foreground">
-                  Structured Learning
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  Follow a carefully designed curriculum that builds knowledge
-                  progressively
-                </p>
-              </div>
-              <div className="space-y-3">
-                <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mx-auto">
-                  <CheckCircle className="w-6 h-6 text-accent" />
-                </div>
-                <h3 className="font-semibold text-foreground">Unlock System</h3>
-                <p className="text-muted-foreground text-sm">
-                  Master each concept before moving forward with our quiz-based
-                  progression
-                </p>
-              </div>
-              <div className="space-y-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
-                  <Code className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-foreground">
-                  Hands-on Practice
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  Apply what you learn with integrated coding challenges and
-                  projects
-                </p>
-              </div>
             </div>
           </div>
         </section>

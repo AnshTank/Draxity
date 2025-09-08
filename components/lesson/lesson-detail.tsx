@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -47,6 +48,48 @@ interface LessonDetailProps {
 }
 
 export function LessonDetail({ lessonData }: LessonDetailProps) {
+  const [isCompleted, setIsCompleted] = useState(false)
+
+  useEffect(() => {
+    // Check if lesson is already completed
+    const completedLessons = JSON.parse(localStorage.getItem('completedLessons') || '{}')
+    const lessonKey = `${window.location.pathname}`
+    setIsCompleted(completedLessons[lessonKey] || false)
+  }, [])
+
+  const handleFinishLesson = () => {
+    // Mark lesson as completed
+    const completedLessons = JSON.parse(localStorage.getItem('completedLessons') || '{}')
+    const lessonKey = `${window.location.pathname}`
+    completedLessons[lessonKey] = true
+    localStorage.setItem('completedLessons', JSON.stringify(completedLessons))
+    
+    // Update module progress
+    const moduleProgress = JSON.parse(localStorage.getItem('moduleProgress') || '{}')
+    const pathParts = window.location.pathname.split('/')
+    const courseId = pathParts[2]
+    const moduleId = pathParts[4]
+    const lessonId = pathParts[6]
+    
+    if (!moduleProgress[courseId]) moduleProgress[courseId] = {}
+    if (!moduleProgress[courseId][moduleId]) moduleProgress[courseId][moduleId] = { completedLessons: [] }
+    
+    if (!moduleProgress[courseId][moduleId].completedLessons.includes(lessonId)) {
+      moduleProgress[courseId][moduleId].completedLessons.push(lessonId)
+    }
+    
+    localStorage.setItem('moduleProgress', JSON.stringify(moduleProgress))
+    
+    // Always go back to module
+    window.history.back()
+  }
+  
+  const isLastLesson = () => {
+    const pathParts = window.location.pathname.split('/')
+    const lessonId = pathParts[6]
+    return lessonId === '8'
+  }
+
   return (
     <>
       <Navigation />
@@ -210,17 +253,11 @@ export function LessonDetail({ lessonData }: LessonDetailProps) {
             </Card>
 
             {/* Navigation */}
-            <div className="flex justify-between pt-6">
-              <Button variant="outline" onClick={() => window.history.back()}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Module
+            <div className="flex justify-center pt-6">
+              <Button onClick={handleFinishLesson}>
+                Finish Lesson
+                <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
-              {lessonData.nextLesson && (
-                <Button onClick={() => window.location.href = `${window.location.pathname.replace(/\/[^/]*$/, '')}/${lessonData.nextLesson}`}>
-                  Next Lesson
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              )}
             </div>
           </div>
         </div>

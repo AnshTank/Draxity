@@ -31,11 +31,11 @@ const courseData = {
     duration: "8-12 weeks",
     students: "2,847",
     rating: 4.9,
-    progress: 15,
+    progress: 0,
     totalModules: 8,
-    completedModules: 1,
+    completedModules: 0,
     totalProblems: 300,
-    solvedProblems: 12,
+    solvedProblems: 0,
     modules: [
       {
         id: 1,
@@ -46,7 +46,7 @@ const courseData = {
         problems: 45,
         duration: "1-2 weeks",
         status: "available",
-        progress: 75,
+        progress: 0,
         topics: [
           "Array Basics",
           "Two Pointers",

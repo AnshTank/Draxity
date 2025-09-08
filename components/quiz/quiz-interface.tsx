@@ -15,6 +15,8 @@ import {
   Star,
   Sparkles,
   Gift,
+  Pause,
+  ArrowLeft,
 } from "lucide-react";
 
 import Link from "next/link";
@@ -418,10 +420,29 @@ export function QuizInterface() {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 px-6 pt-2 overflow-hidden">
-      <div className="max-w-4xl mx-auto h-full overflow-y-auto">
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 px-6 py-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header with Pause Button */}
+        <div className="flex items-center justify-between mb-8">
+          <Button
+            variant="outline"
+            onClick={() => window.history.back()}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Module
+          </Button>
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <Pause className="h-4 w-4" />
+            Pause Quiz
+          </Button>
+        </div>
+        
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
                 Arrays & Strings Quiz
@@ -454,10 +475,7 @@ export function QuizInterface() {
           </div>
         </div>
 
-        <Card className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-lg rounded-xl">
-            
-
-            
+        <Card className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-lg rounded-xl mb-8">
             <CardHeader className="pb-4">
             <div className="flex items-start justify-between">
               <CardTitle className="text-2xl text-foreground flex-1">
