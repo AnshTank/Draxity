@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Home, BookOpen, Trophy, Users, User, Menu, X } from "lucide-react"
+import { Home, BookOpen, Trophy, Users, User, Menu, X, Code } from "lucide-react"
 import { ThemeToggle } from "./theme-toggle"
 
 export function Navigation() {
@@ -13,7 +13,7 @@ export function Navigation() {
 
   const navItems = [
     { href: "/", label: "Home", icon: Home },
-    { href: "/dashboard", label: "Dashboard", icon: User },
+    { href: "/practice", label: "Practice", icon: Code },
     { href: "/courses", label: "Courses", icon: BookOpen },
     { href: "/achievements", label: "Achievements", icon: Trophy },
     { href: "/leaderboard", label: "Leaderboard", icon: Users },
@@ -55,9 +55,11 @@ export function Navigation() {
 
           <div className="hidden md:flex items-center gap-4">
             <ThemeToggle />
-            <Button size="sm" variant="default">
-              Profile
-            </Button>
+            <Link href="/dashboard">
+              <Button size="sm" variant="default">
+                Dashboard
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
