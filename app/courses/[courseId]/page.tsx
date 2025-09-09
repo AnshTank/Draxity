@@ -16,11 +16,11 @@ const courseData = {
     duration: "8-12 weeks",
     students: "2,847",
     rating: 4.9,
-    progress: 15,
+    progress: 0,
     totalModules: 8,
-    completedModules: 1,
+    completedModules: 0,
     totalProblems: 300,
-    solvedProblems: 12,
+    solvedProblems: 0,
     modules: [
       {
         id: 1,
@@ -30,8 +30,18 @@ const courseData = {
         problems: 45,
         duration: "1-2 weeks",
         status: "available",
+<<<<<<< HEAD
         progress: 75,
         topics: ["Array Basics", "Two Pointers", "Sliding Window", "String Algorithms"],
+=======
+        progress: 0,
+        topics: [
+          "Array Basics",
+          "Two Pointers",
+          "Sliding Window",
+          "String Algorithms",
+        ],
+>>>>>>> a350447a8e5a2caae75fb1fb81512490971fdedb
       },
       {
         id: 2,
@@ -123,6 +133,24 @@ export default function CoursePage({ params }: { params: { courseId: string } })
 
   return (
     <div className="min-h-screen bg-background">
+<<<<<<< HEAD
+=======
+      <Navigation />
+      {/* Back Navigation */}
+      <div className="px-4 pt-4">
+        <div className="container mx-auto max-w-6xl">
+          <Link
+            href="/courses"
+            className="inline-flex items-center p-2 hover:bg-muted rounded-lg transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2 text-muted-foreground hover:text-foreground" />
+            <span className="text-sm text-muted-foreground hover:text-foreground">
+              Back to Courses
+            </span>
+          </Link>
+        </div>
+      </div>
+>>>>>>> a350447a8e5a2caae75fb1fb81512490971fdedb
       {/* Course Header */}
       <section className="py-16 px-4 bg-card">
         <div className="container mx-auto max-w-6xl">
@@ -217,10 +245,12 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                     </div>
                   </div>
 
-                  <Button className="w-full mt-4">
-                    Continue Learning
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
+                  <Link href={`/courses/${course.id}/modules/1`}>
+                    <Button className="w-full mt-4">
+                      Continue Learning
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
 

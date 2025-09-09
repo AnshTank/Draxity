@@ -1,21 +1,25 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { BookOpen, Clock, CheckCircle, ArrowRight, Play, Lock, Star, Target } from "lucide-react"
+import { BookOpen, Clock, CheckCircle, ArrowRight, Play, Lock, Star, Target, ArrowLeft, Sun, Moon, RotateCcw } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { useTheme } from "next-themes"
 
 // Mock data - would come from database/API
-const moduleData = {
+const initialModuleData = {
   "dsa-fundamentals": {
     "1": {
       id: 1,
       title: "Arrays & Strings",
       description: "Learn fundamental array operations and string manipulation techniques",
-      progress: 75,
-      totalLessons: 8,
-      completedLessons: 6,
+      progress: 0,
+      totalLessons: 9,
+      completedLessons: 0,
       estimatedTime: "1-2 weeks",
       lessons: [
         {
@@ -24,7 +28,7 @@ const moduleData = {
           description: "Understanding array data structure and basic operations",
           type: "concept",
           duration: "15 min",
-          status: "completed",
+          status: "available",
           topics: ["Array Basics", "Memory Layout", "Time Complexity"],
         },
         {
@@ -33,7 +37,7 @@ const moduleData = {
           description: "Different ways to iterate through arrays efficiently",
           type: "interactive",
           duration: "20 min",
-          status: "completed",
+          status: "locked",
           topics: ["For Loops", "While Loops", "Enhanced For Loop"],
         },
         {
@@ -42,7 +46,7 @@ const moduleData = {
           description: "Master the two-pointer approach for array problems",
           type: "visualization",
           duration: "25 min",
-          status: "completed",
+          status: "locked",
           topics: ["Two Pointers", "Left-Right Approach", "Fast-Slow Pointers"],
         },
         {
@@ -51,7 +55,7 @@ const moduleData = {
           description: "Learn the sliding window technique for subarray problems",
           type: "interactive",
           duration: "30 min",
-          status: "completed",
+          status: "locked",
           topics: ["Fixed Window", "Variable Window", "Window Optimization"],
         },
         {
@@ -60,7 +64,7 @@ const moduleData = {
           description: "Understanding strings and character manipulation",
           type: "concept",
           duration: "18 min",
-          status: "completed",
+          status: "locked",
           topics: ["String Basics", "Character Arrays", "String Methods"],
         },
         {
@@ -69,7 +73,7 @@ const moduleData = {
           description: "Algorithms for finding patterns in strings",
           type: "visualization",
           duration: "35 min",
-          status: "completed",
+          status: "locked",
           topics: ["Brute Force", "KMP Algorithm", "Pattern Recognition"],
         },
         {
@@ -78,17 +82,26 @@ const moduleData = {
           description: "Complex array manipulations and optimizations",
           type: "interactive",
           duration: "28 min",
-          status: "current",
+          status: "locked",
           topics: ["In-place Operations", "Array Rotation", "Merge Operations"],
         },
         {
           id: 8,
+          title: "Module Review & Preparation",
+          description: "Comprehensive review of all array and string concepts before taking the final quiz",
+          type: "concept",
+          duration: "20 min",
+          status: "locked",
+          topics: ["Key Concepts Review", "Problem-Solving Strategies", "Common Pitfalls"],
+        },
+        {
+          id: 9,
           title: "Arrays & Strings Quiz",
           description: "Test your understanding before moving to practice problems",
           type: "quiz",
-          duration: "20 min",
+          duration: "30 min",
           status: "locked",
-          topics: ["Comprehensive Review", "Problem Solving", "Concept Application"],
+          topics: ["10 MCQs", "1 Coding Problem", "70% Pass Required"],
         },
       ],
     },
@@ -100,6 +113,81 @@ export default function ModulePage({
 }: {
   params: { courseId: string; moduleId: string }
 }) {
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  const [completedLessons, setCompletedLessons] = useState<string[]>([])
+  const [moduleData, setModuleData] = useState(initialModuleData)
+  const [hasPausedAssessment, setHasPausedAssessment] = useState(false)
+
+  const handleResetProgress = () => {
+    if (confirm('Are you sure you want to reset all progress for this module? This action cannot be undone.')) {
+      // Clear localStorage for this module
+      const moduleProgress = JSON.parse(localStorage.getItem('moduleProgress') || '{}')
+      const completedLessons = JSON.parse(localStorage.getItem('completedLessons') || '{}')
+      
+      // Remove module progress
+      if (moduleProgress[params.courseId]?.[params.moduleId]) {
+        delete moduleProgress[params.courseId][params.moduleId]
+        localStorage.setItem('moduleProgress', JSON.stringify(moduleProgress))
+      }
+      
+      // Remove completed lessons for this module
+      Object.keys(completedLessons).forEach(key => {
+        if (key.includes(`/courses/${params.courseId}/modules/${params.moduleId}/lessons/`)) {
+          delete completedLessons[key]
+        }
+      })
+      localStorage.setItem('completedLessons', JSON.stringify(completedLessons))
+      
+      // Refresh the page to show reset state
+      window.location.reload()
+    }
+  }
+
+  useEffect(() => {
+    setMounted(true)
+    
+    // Check for paused assessment
+    const pausedAssessment = localStorage.getItem('pausedAssessment')
+    setHasPausedAssessment(!!pausedAssessment)
+    
+    // Load progress from localStorage
+    const progress = JSON.parse(localStorage.getItem('moduleProgress') || '{}')
+    const completed = progress[params.courseId]?.[params.moduleId]?.completedLessons || []
+    setCompletedLessons(completed)
+    
+    // Update module data with progress
+    const updatedModule = { ...initialModuleData[params.courseId as keyof typeof initialModuleData]?.[params.moduleId] }
+    if (updatedModule) {
+      updatedModule.completedLessons = completed.length
+      updatedModule.progress = Math.round((completed.length / 9) * 100)
+      
+      // Update lesson statuses
+      updatedModule.lessons = updatedModule.lessons.map((lesson, index) => {
+        if (completed.includes(lesson.id.toString())) {
+          return { ...lesson, status: 'completed' }
+        } else if (index === 0 || completed.includes((lesson.id - 1).toString())) {
+          return { ...lesson, status: 'available' }
+        } else {
+          return { ...lesson, status: 'locked' }
+        }
+      })
+      
+      // Special handling for quiz (lesson 9) - unlock when lesson 8 is completed
+      if (completed.includes('8')) {
+        updatedModule.lessons[8].status = 'available'
+      }
+    }
+    
+    setModuleData({
+      ...initialModuleData,
+      [params.courseId]: {
+        ...initialModuleData[params.courseId as keyof typeof initialModuleData],
+        [params.moduleId]: updatedModule
+      }
+    })
+  }, [params.courseId, params.moduleId])
+
   const module =
     moduleData[params.courseId as keyof typeof moduleData]?.[
       params.moduleId as keyof (typeof moduleData)[keyof typeof moduleData]
@@ -144,19 +232,47 @@ export default function ModulePage({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Breadcrumb */}
+      {/* Header with Back Button and Theme Toggle */}
       <div className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <Link href="/courses" className="hover:text-foreground">
-              Courses
-            </Link>
-            <span>/</span>
-            <Link href={`/courses/${params.courseId}`} className="hover:text-foreground">
-              DSA Fundamentals
-            </Link>
-            <span>/</span>
-            <span className="text-foreground font-medium">{module.title}</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Link href={`/courses/${params.courseId}`}>
+                <Button variant="ghost" size="sm">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Course
+                </Button>
+              </Link>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <Link href="/courses" className="hover:text-foreground">
+                  Courses
+                </Link>
+                <span>/</span>
+                <Link href={`/courses/${params.courseId}`} className="hover:text-foreground">
+                  DSA Fundamentals
+                </Link>
+                <span>/</span>
+                <span className="text-foreground font-medium">{module.title}</span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleResetProgress}
+                className="text-destructive hover:text-destructive"
+              >
+                <RotateCcw className="h-4 w-4 mr-2" />
+                Reset Progress
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              >
+                {mounted && (theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -269,13 +385,15 @@ export default function ModulePage({
                           Locked
                         </Button>
                       ) : (
-                        <Link href={`/courses/${params.courseId}/modules/${params.moduleId}/lessons/${lesson.id}`}>
+                        <Link href={lesson.type === "quiz" ? (hasPausedAssessment ? `/assessment` : `/courses/${params.courseId}/modules/${params.moduleId}/quiz`) : `/courses/${params.courseId}/modules/${params.moduleId}/lessons/${lesson.id}`}>
                           <Button size="sm" variant={lesson.status === "completed" ? "outline" : "default"}>
                             {lesson.status === "completed"
                               ? "Review"
                               : lesson.status === "current"
                                 ? "Continue"
-                                : "Start"}
+                                : lesson.type === "quiz" && lesson.status === "available"
+                                  ? (hasPausedAssessment ? "Resume Quiz" : "Take Quiz")
+                                  : "Start"}
                             <ArrowRight className="ml-2 w-4 h-4" />
                           </Button>
                         </Link>

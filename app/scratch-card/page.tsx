@@ -66,9 +66,7 @@ export default function ScratchCardPage() {
   };
 
   return (
-    <>
-      <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-purple-950 dark:to-indigo-950 p-8 pt-24">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-purple-950 dark:to-indigo-950 p-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-12 flex items-center justify-between">
             <div className="space-y-4">
@@ -176,6 +174,5 @@ export default function ScratchCardPage() {
           </div>
         </div>
       </div>
-    </>
   );
 }

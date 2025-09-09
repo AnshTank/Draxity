@@ -67,6 +67,7 @@ export default function CoursesPage() {
         </div>
       </section>
 
+<<<<<<< HEAD
       {/* Courses Grid */}
       <section className="py-8 px-4">
         <div className="container mx-auto max-w-6xl">
@@ -84,11 +85,53 @@ export default function CoursesPage() {
                       <Badge variant="secondary" className="text-sm">
                         <Clock className="w-4 h-4 mr-1" />
                         Coming Soon
+=======
+        {/* Courses Grid */}
+        <section className="py-8 px-4">
+          <div className="container mx-auto max-w-6xl">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {courses.map((course) => (
+                <Card
+                  key={course.id}
+                  className="overflow-hidden hover:shadow-lg transition-shadow flex flex-col"
+                  style={{ minHeight: "500px" }}
+                >
+                  <div className="aspect-video bg-muted relative overflow-hidden">
+                    <img
+                      src={course.image || "/placeholder.svg"}
+                      alt={course.title}
+                      className="w-full h-full object-cover"
+                    />
+                    {course.status === "coming-soon" && (
+                      <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                        <Badge variant="secondary" className="text-sm">
+                          <Clock className="w-4 h-4 mr-1" />
+                          Coming Soon
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between mb-2">
+                      <CardTitle className="text-lg flex-1">
+                        {course.title}
+                      </CardTitle>
+                      <Badge
+                        variant={
+                          course.status === "available"
+                            ? "default"
+                            : "secondary"
+                        }
+                      >
+                        {course.level}
+>>>>>>> a350447a8e5a2caae75fb1fb81512490971fdedb
                       </Badge>
                     </div>
                   )}
                 </div>
 
+<<<<<<< HEAD
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between mb-2">
                     <CardTitle className="text-lg flex-1">{course.title}</CardTitle>
@@ -149,10 +192,82 @@ export default function CoursesPage() {
                 </CardContent>
               </Card>
             ))}
+=======
+                  <CardContent className="space-y-3 flex-1 flex flex-col pt-0">
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="flex items-center text-muted-foreground">
+                        <Clock className="w-4 h-4 mr-1" />
+                        {course.duration}
+                      </div>
+                      <div className="flex items-center">
+                        <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                        <span className="font-medium">{course.rating}</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 text-sm text-muted-foreground">
+                      <div className="flex items-center">
+                        <Users className="w-4 h-4 mr-1" />
+                        {course.students} students
+                      </div>
+                      <div>
+                        {course.modules} modules • {course.problems} problems
+                      </div>
+                    </div>
+
+                    <div className="h-12 flex items-start">
+                      {course.progress > 0 && (
+                        <div className="space-y-2 w-full">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              Progress
+                            </span>
+                            <span className="font-medium">
+                              {course.progress}%
+                            </span>
+                          </div>
+                          <Progress value={course.progress} className="h-2" />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-auto">
+                      {course.status === "available" ? (
+                        <Link href={`/courses/${course.id}`}>
+                          <Button className="w-full">
+                            {course.progress > 0
+                              ? "Continue Learning"
+                              : "Start Course"}
+                            <ArrowRight className="ml-2 w-4 h-4" />
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Button disabled className="w-full">
+                          <Lock className="mr-2 w-4 h-4" />
+                          Coming Soon
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            
+            {/* More Courses Button */}
+            <div className="text-center mt-12">
+              <Link href="/courses/all">
+                <Button variant="outline" size="lg" className="px-8">
+                  View All Courses
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
+>>>>>>> a350447a8e5a2caae75fb1fb81512490971fdedb
           </div>
         </div>
       </section>
 
+<<<<<<< HEAD
       {/* Features Section */}
       <section className="py-16 px-4 bg-card">
         <div className="container mx-auto max-w-4xl text-center">
@@ -161,6 +276,26 @@ export default function CoursesPage() {
             <div className="space-y-3">
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
                 <BookOpen className="w-6 h-6 text-primary" />
+=======
+        {/* Features Section */}
+        <section className="py-16 px-4 bg-card">
+          <div className="container mx-auto max-w-4xl text-center">
+            <h2 className="text-3xl font-bold mb-6 text-foreground">
+              Why Choose Draxity Courses?
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="space-y-3">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
+                  <BookOpen className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-foreground">
+                  Structured Learning
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  Follow a carefully designed curriculum that builds knowledge
+                  progressively
+                </p>
+>>>>>>> a350447a8e5a2caae75fb1fb81512490971fdedb
               </div>
               <h3 className="font-semibold text-foreground">Structured Learning</h3>
               <p className="text-muted-foreground text-sm">

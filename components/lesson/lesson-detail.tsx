@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -35,7 +36,7 @@ interface LessonData {
     title: string
     content: string
   }
-  references: {
+  references?: {
     articles: { title: string; url: string }[]
     videos: { title: string; url: string }[]
   }
@@ -47,6 +48,48 @@ interface LessonDetailProps {
 }
 
 export function LessonDetail({ lessonData }: LessonDetailProps) {
+  const [isCompleted, setIsCompleted] = useState(false)
+
+  useEffect(() => {
+    // Check if lesson is already completed
+    const completedLessons = JSON.parse(localStorage.getItem('completedLessons') || '{}')
+    const lessonKey = `${window.location.pathname}`
+    setIsCompleted(completedLessons[lessonKey] || false)
+  }, [])
+
+  const handleFinishLesson = () => {
+    // Mark lesson as completed
+    const completedLessons = JSON.parse(localStorage.getItem('completedLessons') || '{}')
+    const lessonKey = `${window.location.pathname}`
+    completedLessons[lessonKey] = true
+    localStorage.setItem('completedLessons', JSON.stringify(completedLessons))
+    
+    // Update module progress
+    const moduleProgress = JSON.parse(localStorage.getItem('moduleProgress') || '{}')
+    const pathParts = window.location.pathname.split('/')
+    const courseId = pathParts[2]
+    const moduleId = pathParts[4]
+    const lessonId = pathParts[6]
+    
+    if (!moduleProgress[courseId]) moduleProgress[courseId] = {}
+    if (!moduleProgress[courseId][moduleId]) moduleProgress[courseId][moduleId] = { completedLessons: [] }
+    
+    if (!moduleProgress[courseId][moduleId].completedLessons.includes(lessonId)) {
+      moduleProgress[courseId][moduleId].completedLessons.push(lessonId)
+    }
+    
+    localStorage.setItem('moduleProgress', JSON.stringify(moduleProgress))
+    
+    // Always go back to module
+    window.history.back()
+  }
+  
+  const isLastLesson = () => {
+    const pathParts = window.location.pathname.split('/')
+    const lessonId = pathParts[6]
+    return lessonId === '8'
+  }
+
   return (
     <>
       <Navigation />
@@ -54,12 +97,10 @@ export function LessonDetail({ lessonData }: LessonDetailProps) {
         <div className="container mx-auto px-6 py-8 max-w-5xl">
           {/* Header */}
           <div className="mb-8">
-            <Link href="/courses/dsa-fundamentals/arrays-strings">
-              <Button variant="ghost" className="mb-4">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Module
-              </Button>
-            </Link>
+            <Button variant="ghost" className="mb-4" onClick={() => window.history.back()}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Module
+            </Button>
             
             <div className="mb-6">
               <h1 className="text-4xl font-bold text-foreground mb-3">{lessonData.title}</h1>
@@ -212,21 +253,11 @@ export function LessonDetail({ lessonData }: LessonDetailProps) {
             </Card>
 
             {/* Navigation */}
-            <div className="flex justify-between pt-6">
-              <Link href="/courses/dsa-fundamentals/arrays-strings">
-                <Button variant="outline">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Module
-                </Button>
-              </Link>
-              {lessonData.nextLesson && (
-                <Link href={`/courses/dsa-fundamentals/arrays-strings/lesson/${lessonData.nextLesson}`}>
-                  <Button>
-                    Next Lesson
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </Link>
-              )}
+            <div className="flex justify-center pt-6">
+              <Button onClick={handleFinishLesson}>
+                Finish Lesson
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
             </div>
           </div>
         </div>
