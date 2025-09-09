@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Editor from '@monaco-editor/react';
 import {
   RotateCcw,
   Play,
@@ -150,16 +151,27 @@ export function CodingEnvironment({
   onFullscreenChange,
 }: CodingEnvironmentProps = {}) {
   const [selectedLanguage, setSelectedLanguage] = useState("cpp");
-  const [code, setCode] = useState(languages[0].template);
+  const [code, setCode] = useState(`#include <iostream>
+using namespace std;
+
+int main() {
+    // Welcome to Draxity - Next-Gen DSA Learning Platform
+    cout << "Hello, World!" << endl;
+    
+    // Start coding your solution here...
+    
+    return 0;
+}`);
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [middlePanelWidth, setMiddlePanelWidth] = useState(400);
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState("input");
-  const [cursorLine, setCursorLine] = useState(1);
+  const [cursorLine, setCursorLine] = useState(4);
   const { theme: globalTheme } = useTheme();
   const [localTheme, setLocalTheme] = useState("light");
+
 
   useEffect(() => {
     if (globalTheme) {
@@ -175,31 +187,75 @@ export function CodingEnvironment({
   }, []);
 
   const handleLanguageChange = (langId: string) => {
-    const lang = languages.find((l) => l.id === langId);
-    if (lang) {
+    if (langId === 'cpp') {
       setSelectedLanguage(langId);
-      setCode(lang.template);
+      setCode(`#include <iostream>
+using namespace std;
+
+int main() {
+    // Welcome to Draxity - Next-Gen DSA Learning Platform
+    cout << "Hello, World!" << endl;
+    
+    // Start coding your solution here...
+    
+    return 0;
+}`);
       setOutput("");
+    } else {
+      setOutput("Only C++ is currently supported. More languages coming soon!");
     }
   };
 
-  const handleRun = () => {
+  const handleRun = async () => {
     setIsRunning(true);
     setActiveTab("output");
-    setTimeout(() => {
-      setOutput(
-        `Compiling and running ${
-          languages.find((l) => l.id === selectedLanguage)?.name
-        }...\n\nHello, World!\n\nProcess finished with exit code 0\nExecution time: 0.15s\nMemory used: 1.2 MB`
-      );
+    setOutput("Compiling and running C++...\n");
+
+    try {
+      const response = await fetch('/api/execute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mode: 'practice',
+          language: selectedLanguage,
+          code: code,
+          input: input
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        if (result.error) {
+          setOutput(`Compilation/Runtime Error:\n${result.error}`);
+        } else {
+          setOutput(`${result.output}\n\nProcess finished successfully\nExecution time: ${result.executionTime}\nMemory used: ${result.memoryUsed}`);
+        }
+      } else {
+        setOutput(`Error: ${result.error || 'Unknown error occurred'}`);
+      }
+    } catch (error) {
+      setOutput(`Network Error: ${error instanceof Error ? error.message : 'Failed to connect to compiler'}`);
+    } finally {
       setIsRunning(false);
-    }, 2000);
+    }
   };
 
   const handleReset = () => {
-    const lang = languages.find((l) => l.id === selectedLanguage);
-    if (lang) {
-      setCode(lang.template);
+    if (selectedLanguage === 'cpp') {
+      setCode(`#include <iostream>
+using namespace std;
+
+int main() {
+    // Welcome to Draxity - Next-Gen DSA Learning Platform
+    cout << "Hello, World!" << endl;
+    
+    // Start coding your solution here...
+    
+    return 0;
+}`);
       setOutput("");
     }
   };
@@ -296,8 +352,8 @@ export function CodingEnvironment({
 
   // Common line height and font size for perfect alignment
   const lineHeight = 1.5;
-  const fontSize = 14;
-  const paddingTop = 16;
+  const fontSize = 18;
+  const paddingTop = 20;
 
   return (
     <div
@@ -449,9 +505,11 @@ export function CodingEnvironment({
           </div>
 
           <div className="flex-1 flex overflow-hidden">
+
+
             {/* Line Numbers */}
             <div
-              className={`w-12 flex flex-col font-mono select-none border-r ${
+              className={`w-14 flex flex-col font-mono select-none border-r ${
                 localTheme === "dark"
                   ? "bg-gray-950 border-gray-800 text-gray-500"
                   : "bg-gray-50 border-gray-200 text-gray-400"
@@ -484,40 +542,81 @@ export function CodingEnvironment({
               ))}
             </div>
 
-            {/* Code Area */}
-            <div className="flex-1 relative">
-              <textarea
+            {/* Breathing Space */}
+            <div className={`w-4 ${
+              localTheme === "dark" ? "bg-black" : "bg-gray-50"
+            }`}></div>
+
+            {/* Monaco Editor */}
+            <div className="flex-1">
+              <Editor
+                height="100%"
+                language="cpp"
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
-                onSelect={(e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  const cursorPos = target.selectionStart;
-                  const textBeforeCursor = code.substring(0, cursorPos);
-                  const lineNumber = textBeforeCursor.split("\n").length;
-                  setCursorLine(lineNumber);
-                }}
-                onKeyUp={(e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  const cursorPos = target.selectionStart;
-                  const textBeforeCursor = code.substring(0, cursorPos);
-                  const lineNumber = textBeforeCursor.split("\n").length;
-                  setCursorLine(lineNumber);
-                }}
-                className={`w-full h-full resize-none focus:outline-none border-0 ${
-                  localTheme === "dark"
-                    ? "bg-black text-white placeholder-gray-500"
-                    : "bg-gray-50 text-gray-800 placeholder-gray-400"
-                }`}
-                style={{
-                  fontFamily:
-                    'JetBrains Mono, Consolas, Monaco, "Courier New", monospace',
+                onChange={(value) => setCode(value || '')}
+                theme={localTheme === 'dark' ? 'vs-dark' : 'vs'}
+                options={{
+                  fontSize: 18,
+                  lineHeight: 27,
+                  fontFamily: 'JetBrains Mono, Consolas, Monaco, "Courier New", monospace',
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
                   tabSize: 4,
-                  fontSize: `${fontSize}px`,
-                  lineHeight: lineHeight,
-                  padding: `${paddingTop}px 16px 16px 16px`,
+                  insertSpaces: true,
+                  wordWrap: 'off',
+                  lineNumbers: 'off',
+                  glyphMargin: false,
+                  folding: false,
+                  lineDecorationsWidth: 0,
+                  renderLineHighlight: 'line',
+                  selectOnLineNumbers: false,
+                  roundedSelection: false,
+                  readOnly: false,
+                  cursorStyle: 'line',
+                  automaticLayout: true,
+                  padding: { top: 20, left: 0 },
                 }}
-                spellCheck={false}
-                placeholder="Start coding here..."
+                beforeMount={(monaco) => {
+                  // Define custom theme to match your design
+                  monaco.editor.defineTheme('draxity-dark', {
+                    base: 'vs-dark',
+                    inherit: true,
+                    rules: [],
+                    colors: {
+                      'editor.background': '#000000',
+                      'editor.foreground': '#ffffff',
+                    }
+                  });
+                  
+                  monaco.editor.defineTheme('draxity-light', {
+                    base: 'vs',
+                    inherit: true,
+                    rules: [],
+                    colors: {
+                      'editor.background': '#f9fafb',
+                      'editor.foreground': '#1f2937',
+                    }
+                  });
+                }}
+                onMount={(editor) => {
+                  // Apply custom theme
+                  editor.updateOptions({
+                    theme: localTheme === 'dark' ? 'draxity-dark' : 'draxity-light'
+                  });
+                  
+                  // Track cursor position for line highlighting
+                  editor.onDidChangeCursorPosition((e) => {
+                    setCursorLine(e.position.lineNumber);
+                  });
+                  
+                  // Set initial cursor position to line 4 (Hello World line)
+                  editor.setPosition({ lineNumber: 4, column: 1 });
+                  setCursorLine(4);
+                  
+                  // Focus editor
+                  editor.focus();
+                }}
               />
             </div>
           </div>
