@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { CheckCircle, XCircle, Trophy, Lock, ArrowRight, RotateCcw, Star } from "lucide-react"
+import { CheckCircle, XCircle, Trophy, Lock, ArrowRight, RotateCcw, Star, ArrowLeft, Pause } from "lucide-react"
 import Link from "next/link"
 
 interface QuizResultsProps {

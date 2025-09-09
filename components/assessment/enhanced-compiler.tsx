@@ -1,691 +1,8 @@
-// "use client";
-
-// import { useState, useEffect } from "react";
-// import { Button } from "@/components/ui/button";
-// import { Badge } from "@/components/ui/badge";
-// import {
-//   Play,
-//   RotateCcw,
-//   CheckCircle,
-//   XCircle,
-//   Send,
-//   Sun,
-//   Moon,
-//   GripVertical,
-//   ChevronDown,
-//   ChevronUp,
-//   BookOpen,
-//   FileText,
-//   StickyNote,
-//   ArrowLeft,
-//   Clock,
-//   Maximize,
-//   Minimize,
-//   Pause,
-// } from "lucide-react";
-// import { useTheme } from "next-themes";
-
-// const languages = [
-//   {
-//     id: "python",
-//     name: "Python3",
-//     template:
-//       "def twoSum(nums, target):\n    # Write your solution here\n    pass",
-//   },
-//   {
-//     id: "javascript",
-//     name: "JavaScript",
-//     template:
-//       "function twoSum(nums, target) {\n    // Write your solution here\n}",
-//   },
-//   {
-//     id: "java",
-//     name: "Java",
-//     template:
-//       "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // Write your solution here\n        return new int[0];\n    }\n}",
-//   },
-//   {
-//     id: "cpp",
-//     name: "C++",
-//     template:
-//       "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        // Write your solution here\n        return {};\n    }\n};",
-//   },
-// ];
-
-// export function EnhancedCompiler() {
-//   const [selectedLanguage, setSelectedLanguage] = useState("python");
-//   const [code, setCode] = useState(languages[0].template);
-//   const [isRunning, setIsRunning] = useState(false);
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [testResults, setTestResults] = useState<
-//     Array<{ case: string; passed: boolean; expected: string; actual: string }>
-//   >([]);
-//   const [leftPanelWidth, setLeftPanelWidth] = useState(50);
-//   const [testResultsHeight, setTestResultsHeight] = useState(25);
-//   const [isTestResultsCollapsed, setIsTestResultsCollapsed] = useState(true);
-//   const [cursorLine, setCursorLine] = useState(1);
-//   const [activeTab, setActiveTab] = useState("description");
-//   const [notes, setNotes] = useState("");
-//   const [timeLeft, setTimeLeft] = useState(3600);
-//   const [isFullscreen, setIsFullscreen] = useState(false);
-//   const { theme, setTheme } = useTheme();
-//   const [mounted, setMounted] = useState(false);
-
-//   useEffect(() => {
-//     setMounted(true);
-//   }, []);
-
-//   useEffect(() => {
-//     const timer = setInterval(() => {
-//       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-//     }, 1000);
-//     return () => clearInterval(timer);
-//   }, []);
-
-//   const formatTime = (seconds: number) => {
-//     const hours = Math.floor(seconds / 3600);
-//     const minutes = Math.floor((seconds % 3600) / 60);
-//     const secs = seconds % 60;
-//     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-//   };
-
-//   const handleBackToHome = () => {
-//     window.location.href = '/';
-//   };
-
-//   const toggleFullscreen = () => {
-//     if (!document.fullscreenElement) {
-//       document.documentElement.requestFullscreen();
-//       setIsFullscreen(true);
-//     } else {
-//       document.exitFullscreen();
-//       setIsFullscreen(false);
-//     }
-//   };
-
-//   const handleLanguageChange = (langId: string) => {
-//     const lang = languages.find((l) => l.id === langId);
-//     if (lang) {
-//       setSelectedLanguage(langId);
-//       setCode(lang.template);
-//       setTestResults([]);
-//     }
-//   };
-
-//   const handleRun = () => {
-//     setIsRunning(true);
-//     setTimeout(() => {
-//       const results = [
-//         {
-//           case: "nums = [2,7,11,15], target = 9",
-//           passed: true,
-//           expected: "[0,1]",
-//           actual: "[0,1]",
-//         },
-//         {
-//           case: "nums = [3,2,4], target = 6",
-//           passed: true,
-//           expected: "[1,2]",
-//           actual: "[1,2]",
-//         },
-//         {
-//           case: "nums = [3,3], target = 6",
-//           passed: false,
-//           expected: "[0,1]",
-//           actual: "None",
-//         },
-//       ];
-//       setTestResults(results);
-//       setIsRunning(false);
-//       setIsTestResultsCollapsed(false);
-//     }, 2000);
-//   };
-
-//   const handleSubmit = () => {
-//     setIsSubmitting(true);
-//     setTimeout(() => {
-//       console.log("Solution submitted successfully!");
-//       setIsSubmitting(false);
-//     }, 1500);
-//   };
-
-//   const handleReset = () => {
-//     const lang = languages.find((l) => l.id === selectedLanguage);
-//     if (lang) {
-//       setCode(lang.template);
-//       setTestResults([]);
-//     }
-//   };
-
-//   const handleVerticalResize = (e: React.MouseEvent) => {
-//     e.preventDefault();
-//     const startX = e.clientX;
-//     const startWidth = leftPanelWidth;
-
-//     const handleMouseMove = (e: MouseEvent) => {
-//       const containerWidth = window.innerWidth;
-//       const newWidth =
-//         startWidth + ((e.clientX - startX) / containerWidth) * 100;
-//       setLeftPanelWidth(Math.max(40, Math.min(60, newWidth)));
-//     };
-
-//     const handleMouseUp = () => {
-//       document.removeEventListener("mousemove", handleMouseMove);
-//       document.removeEventListener("mouseup", handleMouseUp);
-//     };
-
-//     document.addEventListener("mousemove", handleMouseMove);
-//     document.addEventListener("mouseup", handleMouseUp);
-//   };
-
-//   const handleHorizontalResize = (e: React.MouseEvent) => {
-//     e.preventDefault();
-//     const startY = e.clientY;
-//     const startHeight = testResultsHeight;
-
-//     const handleMouseMove = (e: MouseEvent) => {
-//       const containerHeight = window.innerHeight;
-//       const deltaY = e.clientY - startY;
-//       const deltaPercent = (deltaY / containerHeight) * 100;
-//       const newHeight = startHeight - deltaPercent;
-//       setTestResultsHeight(Math.max(24, Math.min(36, newHeight)));
-//     };
-
-//     const handleMouseUp = () => {
-//       document.removeEventListener("mousemove", handleMouseMove);
-//       document.removeEventListener("mouseup", handleMouseUp);
-//     };
-
-//     document.addEventListener("mousemove", handleMouseMove);
-//     document.addEventListener("mouseup", handleMouseUp);
-//   };
-
-//   const passedTests = testResults.filter((t) => t.passed).length;
-//   const totalTests = testResults.length;
-//   const lineHeight = 24;
-//   const codeLines = code.split("\n");
-
-//   return (
-//     <div className="h-screen bg-background flex flex-col overflow-hidden">
-//       {/* Top Header with Back to Home, Timer, and Pause */}
-//       <div className="h-16 bg-card border-b border-border flex items-center justify-between px-6">
-//         <Button variant="ghost" size="sm" onClick={handleBackToHome}>
-//           <ArrowLeft className="h-4 w-4 mr-2" />
-//           Back to Home
-//         </Button>
-
-//         <div className="flex items-center space-x-4">
-//           <div className="flex items-center space-x-2 text-sm">
-//             <Clock className="h-4 w-4 text-muted-foreground" />
-//             <span className={`font-mono ${timeLeft < 300 ? 'text-red-500' : 'text-foreground'}`}>
-//               {formatTime(timeLeft)}
-//             </span>
-//           </div>
-//           <Button variant="outline" size="sm" className="hover:bg-orange-50 hover:text-orange-700 hover:border-orange-300 dark:hover:bg-orange-900/20 dark:hover:text-orange-300 dark:hover:border-orange-700">
-//             <Pause className="h-4 w-4 mr-2" />
-//             Pause Test
-//           </Button>
-//         </div>
-//       </div>
-
-//       {/* Main Content */}
-//       <div className="flex-1 flex">
-//         {/* Left Panel */}
-//         <div
-//           className="bg-background border-r border-border flex flex-col"
-//           style={{ width: `${leftPanelWidth}%` }}
-//         >
-//           {/* Left Panel Header */}
-//           <div className="h-12 bg-card border-b border-border flex items-center justify-between px-4">
-//             <div className="flex items-center space-x-4">
-//               <h1 className="text-lg font-bold text-foreground">1. Two Sum</h1>
-//               <Badge className="bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 text-xs px-2 py-1">
-//                 Easy
-//               </Badge>
-//             </div>
-//           </div>
-
-//           {/* Tab Navigation */}
-//           <div className="flex border-b border-border bg-muted/20">
-//             <button
-//               onClick={() => setActiveTab("description")}
-//               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-//                 activeTab === "description"
-//                   ? "border-primary text-primary bg-background"
-//                   : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30"
-//               }`}
-//             >
-//               <BookOpen className="h-4 w-4 mr-2 inline" />
-//               Description
-//             </button>
-//             <button
-//               onClick={() => setActiveTab("solution")}
-//               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-//                 activeTab === "solution"
-//                   ? "border-primary text-primary bg-background"
-//                   : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30"
-//               }`}
-//             >
-//               <FileText className="h-4 w-4 mr-2 inline" />
-//               Solution
-//             </button>
-//             <button
-//               onClick={() => setActiveTab("notes")}
-//               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-//                 activeTab === "notes"
-//                   ? "border-primary text-primary bg-background"
-//                   : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30"
-//               }`}
-//             >
-//               <StickyNote className="h-4 w-4 mr-2 inline" />
-//               Notes
-//             </button>
-//           </div>
-
-//           {/* Tab Content */}
-//           <div className="flex-1 overflow-auto">
-//             {activeTab === "description" && (
-//               <div className="p-6">
-//                 <div className="space-y-4 text-sm text-muted-foreground">
-//               <p>
-//                 Given an array of integers{" "}
-//                 <code className="bg-muted/50 px-1.5 py-0.5 rounded text-foreground font-medium">
-//                   nums
-//                 </code>{" "}
-//                 and an integer{" "}
-//                 <code className="bg-muted/50 px-1.5 py-0.5 rounded text-foreground font-medium">
-//                   target
-//                 </code>
-//                 , return{" "}
-//                 <em className="text-foreground font-medium">
-//                   indices of the two numbers such that they add up to target
-//                 </em>
-//                 .
-//               </p>
-//               <p>
-//                 You may assume that each input would have{" "}
-//                 <strong className="text-foreground font-semibold">
-//                   exactly one solution
-//                 </strong>
-//                 , and you may not use the same element twice.
-//               </p>
-
-//               <div className="space-y-4">
-//                 <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-border">
-//                   <div className="text-sm text-foreground font-semibold mb-3">
-//                     Example 1:
-//                   </div>
-//                   <div className="font-mono text-sm space-y-1">
-//                     <div>
-//                       <span className="text-foreground font-semibold">
-//                         Input:
-//                       </span>{" "}
-//                       <span className="text-foreground/80">
-//                         nums = [2,7,11,15], target = 9
-//                       </span>
-//                     </div>
-//                     <div>
-//                       <span className="text-foreground font-semibold">
-//                         Output:
-//                       </span>{" "}
-//                       <span className="text-foreground/80">[0,1]</span>
-//                     </div>
-//                     <div>
-//                       <span className="text-foreground font-semibold">
-//                         Explanation:
-//                       </span>{" "}
-//                       <span className="text-foreground/80">
-//                         Because nums[0] + nums[1] == 9, we return [0, 1].
-//                       </span>
-//                     </div>
-//                   </div>
-//                 </div>
-
-//                 <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-border">
-//                   <div className="text-sm text-foreground font-semibold mb-3">
-//                     Example 2:
-//                   </div>
-//                   <div className="font-mono text-sm space-y-1">
-//                     <div>
-//                       <span className="text-foreground font-semibold">
-//                         Input:
-//                       </span>{" "}
-//                       <span className="text-foreground/80">
-//                         nums = [3,2,4], target = 6
-//                       </span>
-//                     </div>
-//                     <div>
-//                       <span className="text-foreground font-semibold">
-//                         Output:
-//                       </span>{" "}
-//                       <span className="text-foreground/80">[1,2]</span>
-//                     </div>
-//                   </div>
-//                 </div>
-//               </div>
-
-//               <div>
-//                 <div className="text-sm font-semibold text-foreground mb-3">
-//                   Constraints:
-//                 </div>
-//                 <ul className="text-foreground/80 space-y-1 text-sm">
-//                   <li>
-//                     •{" "}
-//                     <code className="text-foreground font-medium bg-muted/50 px-1 py-0.5 rounded">
-//                       2 ≤ nums.length ≤ 10⁴
-//                     </code>
-//                   </li>
-//                   <li>
-//                     •{" "}
-//                     <code className="text-foreground font-medium bg-muted/50 px-1 py-0.5 rounded">
-//                       -10⁹ ≤ nums[i] ≤ 10⁹
-//                     </code>
-//                   </li>
-//                   <li>
-//                     •{" "}
-//                     <strong className="text-foreground font-semibold">
-//                       Only one valid answer exists.
-//                     </strong>
-//                   </li>
-//                 </ul>
-//               </div>
-//                 </div>
-//               </div>
-//             )}
-
-//             {activeTab === "solution" && (
-//               <div className="p-6">
-//                 <h3 className="text-lg font-semibold mb-4 text-foreground">Solution Approach</h3>
-//                 <div className="space-y-4 text-sm text-foreground/80">
-//                   <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-border">
-//                     <h4 className="font-semibold text-foreground mb-2">Hash Map Approach</h4>
-//                     <p className="mb-3">
-//                       Use a hash map to store the complement of each number as we iterate through the array.
-//                     </p>
-//                     <div className="space-y-2">
-//                       <p><strong className="text-foreground font-semibold">Time Complexity:</strong> O(n)</p>
-//                       <p><strong className="text-foreground font-semibold">Space Complexity:</strong> O(n)</p>
-//                     </div>
-//                   </div>
-
-//                   <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-border">
-//                     <h4 className="font-semibold text-foreground mb-2">Algorithm Steps</h4>
-//                     <ol className="list-decimal list-inside space-y-1 text-foreground/80">
-//                       <li>Create an empty hash map</li>
-//                       <li>For each number, calculate its complement (target - current number)</li>
-//                       <li>Check if complement exists in hash map</li>
-//                       <li>If yes, return indices; if no, store current number and index</li>
-//                     </ol>
-//                   </div>
-//                 </div>
-//               </div>
-//             )}
-
-//             {activeTab === "notes" && (
-//               <div className="p-6">
-//                 <h3 className="text-lg font-semibold mb-4 text-foreground">Personal Notes</h3>
-//                 <textarea
-//                   value={notes}
-//                   onChange={(e) => setNotes(e.target.value)}
-//                   placeholder="Write your notes, observations, or alternative approaches here..."
-//                   className="w-full h-64 p-3 bg-background border border-border rounded-lg text-foreground text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-//                 />
-//               </div>
-//             )}
-//           </div>
-//         </div>
-
-//         {/* Vertical Resizer */}
-//         <div
-//           className="w-1 bg-border hover:bg-primary cursor-col-resize flex items-center justify-center group"
-//           onMouseDown={handleVerticalResize}
-//         >
-//           <GripVertical className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-//         </div>
-
-//         {/* Code Editor Section */}
-//         <div className="flex-1 bg-background flex flex-col">
-//           {/* Code Editor Header */}
-//           <div className="h-12 bg-card border-b border-border flex items-center justify-between px-4">
-//             <select
-//               value={selectedLanguage}
-//               onChange={(e) => handleLanguageChange(e.target.value)}
-//               className="bg-background border border-border text-foreground text-sm px-3 py-1.5 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-//             >
-//               {languages.map((lang) => (
-//                 <option key={lang.id} value={lang.id}>
-//                   {lang.name}
-//                 </option>
-//               ))}
-//             </select>
-
-//             <div className="flex items-center space-x-3">
-//               <Button variant="ghost" size="sm" onClick={handleReset}>
-//                 <RotateCcw className="h-4 w-4" />
-//               </Button>
-//               <Button variant="ghost" size="sm" onClick={toggleFullscreen}>
-//                 {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-//               </Button>
-//               <Button
-//                 variant="ghost"
-//                 size="sm"
-//                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-//               >
-//                 {mounted &&
-//                   (theme === "dark" ? (
-//                     <Sun className="h-4 w-4" />
-//                   ) : (
-//                     <Moon className="h-4 w-4" />
-//                   ))}
-//               </Button>
-//               <div className="h-6 w-px bg-border"></div>
-//               <Button
-//                 onClick={handleRun}
-//                 disabled={isRunning}
-//                 className="bg-green-600 hover:bg-green-700 text-white"
-//               >
-//                 <Play className="h-4 w-4 mr-2" />
-//                 {isRunning ? "Running..." : "Run"}
-//               </Button>
-//               <Button
-//                 onClick={handleSubmit}
-//                 disabled={isSubmitting}
-//                 className="bg-blue-600 hover:bg-blue-700 text-white"
-//               >
-//                 <Send className="h-4 w-4 mr-2" />
-//                 {isSubmitting ? "Submitting..." : "Submit"}
-//               </Button>
-//             </div>
-//           </div>
-
-//           {/* Code Editor Area */}
-//           <div
-//             className="flex flex-col flex-1"
-//             style={{
-//               height: isTestResultsCollapsed
-//                 ? "calc(100% - 48px - 48px)" // header + collapsed test results
-//                 : `calc(100% - 48px - ${testResultsHeight}vh)`, // header + expanded test results
-//             }}
-//           >
-//             <div className="flex-1 flex overflow-hidden">
-//               {/* Line Numbers */}
-//               <div className="w-12 bg-background border-r border-border flex flex-col text-muted-foreground font-mono select-none overflow-hidden">
-//                 <div
-//                   className="flex-1 overflow-y-auto scrollbar-hide"
-//                   style={{
-//                     paddingTop: "1rem",
-//                     paddingBottom: "1rem",
-//                   }}
-//                 >
-//                   {codeLines.map((_, index) => (
-//                     <div
-//                       key={index}
-//                       className={`flex items-center justify-end px-2 text-sm leading-6 ${
-//                         index + 1 === cursorLine
-//                           ? "bg-primary/20 text-primary font-semibold"
-//                           : "hover:bg-muted/30"
-//                       }`}
-//                       style={{ minHeight: "1.5rem" }}
-//                     >
-//                       {index + 1}
-//                     </div>
-//                   ))}
-//                 </div>
-//               </div>
-//               {/* Code Area */}
-//               <div className="flex-1 relative overflow-hidden">
-//                 <textarea
-//                   value={code}
-//                   onChange={(e) => setCode(e.target.value)}
-//                   onSelect={(e) => {
-//                     const target = e.target as HTMLTextAreaElement;
-//                     const cursorPos = target.selectionStart;
-//                     const textBeforeCursor = code.substring(0, cursorPos);
-//                     const lineNumber = textBeforeCursor.split("\n").length;
-//                     setCursorLine(lineNumber);
-//                   }}
-//                   onKeyUp={(e) => {
-//                     const target = e.target as HTMLTextAreaElement;
-//                     const cursorPos = target.selectionStart;
-//                     const textBeforeCursor = code.substring(0, cursorPos);
-//                     const lineNumber = textBeforeCursor.split("\n").length;
-//                     setCursorLine(lineNumber);
-//                   }}
-//                   onScroll={(e) => {
-//                     const target = e.target as HTMLTextAreaElement;
-//                     const lineNumbersDiv = target.parentElement?.previousElementSibling?.firstElementChild as HTMLElement;
-//                     if (lineNumbersDiv) {
-//                       lineNumbersDiv.scrollTop = target.scrollTop;
-//                     }
-//                   }}
-//                   className="w-full h-full px-4 py-4 bg-background text-foreground font-mono text-sm resize-none focus:outline-none border-0 leading-6 scrollbar-hide"
-//                   style={{
-//                     fontFamily: 'JetBrains Mono, Consolas, Monaco, "Courier New", monospace',
-//                     tabSize: 4,
-//                   }}
-//                   spellCheck={false}
-//                   placeholder="Write your solution here..."
-//                 />
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Test Results Section */}
-//           <div
-//             className="bg-card border-t border-border flex flex-col"
-//             style={{
-//               height: isTestResultsCollapsed
-//                 ? "48px"
-//                 : `${testResultsHeight}vh`,
-//             }}
-//           >
-//             {/* Horizontal Resizer - Only show when not collapsed */}
-//             {!isTestResultsCollapsed && (
-//               <div
-//                 className="h-1 bg-border hover:bg-primary cursor-row-resize flex items-center justify-center group"
-//                 onMouseDown={handleHorizontalResize}
-//               >
-//                 <GripVertical className="h-4 w-4 text-muted-foreground group-hover:text-primary rotate-90" />
-//               </div>
-//             )}
-
-//             <div className="h-12 flex items-center justify-between px-4 bg-muted/20 flex-shrink-0">
-//               <div className="flex items-center space-x-3">
-//                 <span className="font-medium text-sm text-foreground">
-//                   Test Results
-//                 </span>
-//                 {testResults.length > 0 && (
-//                   <Badge
-//                     className={`text-xs ${
-//                       passedTests === totalTests
-//                         ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300"
-//                         : "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300"
-//                     }`}
-//                   >
-//                     {passedTests}/{totalTests} Passed
-//                   </Badge>
-//                 )}
-//               </div>
-//               <button
-//                 onClick={() =>
-//                   setIsTestResultsCollapsed(!isTestResultsCollapsed)
-//                 }
-//                 className="p-3 hover:bg-muted/50 rounded transition-colors -m-2"
-//               >
-//                 {isTestResultsCollapsed ? (
-//                   <ChevronDown className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-//                 ) : (
-//                   <ChevronUp className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-//                 )}
-//               </button>
-//             </div>
-//             {!isTestResultsCollapsed && (
-//               <div className="flex-1 p-4 overflow-auto">
-//                 {testResults.length > 0 ? (
-//                   <div className="space-y-3">
-//                     {testResults.map((result, index) => (
-//                       <div
-//                         key={index}
-//                         className="bg-background border border-border rounded-lg p-3"
-//                       >
-//                         <div className="flex items-center space-x-2 mb-2">
-//                           {result.passed ? (
-//                             <CheckCircle className="h-4 w-4 text-green-500" />
-//                           ) : (
-//                             <XCircle className="h-4 w-4 text-red-500" />
-//                           )}
-//                           <span className="text-foreground text-sm font-medium">
-//                             Test Case {index + 1}
-//                           </span>
-//                         </div>
-//                         <div className="text-xs font-mono space-y-1">
-//                           <div className="text-muted-foreground">
-//                             {result.case}
-//                           </div>
-//                           <div className="text-muted-foreground">
-//                             Expected:{" "}
-//                             <span className="text-green-600 dark:text-green-400">
-//                               {result.expected}
-//                             </span>
-//                           </div>
-//                           <div className="text-muted-foreground">
-//                             Output:{" "}
-//                             <span
-//                               className={
-//                                 result.passed
-//                                   ? "text-green-600 dark:text-green-400"
-//                                   : "text-red-600 dark:text-red-400"
-//                               }
-//                             >
-//                               {result.actual}
-//                             </span>
-//                           </div>
-//                         </div>
-//                       </div>
-//                     ))}
-//                   </div>
-//                 ) : (
-//                   <div className="text-muted-foreground text-sm">
-//                     Run your code to see test results...
-//                   </div>
-//                 )}
-//               </div>
-//             )}
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Bottom Border Line */}
-//       <div className="h-0.5 bg-border w-full"></div>
-//     </div>
-//   );
-// }
-
 "use client";
 
 import { useState, useEffect } from "react";
 
-// Simple icon components to replace lucide-react
+// Simple icon components
 const PlayIcon = () => (
   <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
     <path d="M8 5v14l11-7z" />
@@ -896,11 +213,7 @@ const ClockIcon = () => (
 );
 
 const PauseIcon = () => (
-  <svg
-    className="h-4 w-4"
-    fill="currentColor"
-    viewBox="0 0 24 24"
-  >
+  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
     <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
   </svg>
 );
@@ -968,31 +281,389 @@ const Badge = ({
   </span>
 );
 
+// Console Panel Component
+const ConsolePanel = ({
+  theme,
+  consoleOutput,
+  error,
+}: {
+  theme: string;
+  consoleOutput: string;
+  error?: string;
+}) => {
+  return (
+    <div
+      className={`p-4 rounded border ${
+        theme === "dark" ? "bg-gray-800 border-gray-600" : "bg-white border-gray-300"
+      }`}
+    >
+      {error ? (
+        <div>
+          <label
+            className={`block text-xs font-medium mb-2 ${
+              theme === "dark" ? "text-red-400" : "text-red-600"
+            }`}
+          >
+            Error:
+          </label>
+          <pre
+            className={`text-xs font-mono whitespace-pre-wrap p-2 rounded ${
+              theme === "dark"
+                ? "bg-red-900/20 text-red-400"
+                : "bg-red-50 text-red-600"
+            }`}
+          >
+            {error}
+          </pre>
+        </div>
+      ) : consoleOutput ? (
+        <div>
+          <label
+            className={`block text-xs font-medium mb-2 ${
+              theme === "dark" ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
+            Output:
+          </label>
+          <pre
+            className={`text-xs font-mono whitespace-pre-wrap p-2 rounded ${
+              theme === "dark"
+                ? "bg-gray-800 text-gray-300"
+                : "bg-gray-100 text-gray-700"
+            }`}
+          >
+            {consoleOutput}
+          </pre>
+        </div>
+      ) : (
+        <p
+          className={`text-xs text-center py-8 ${
+            theme === "dark" ? "text-gray-400" : "text-gray-500"
+          }`}
+        >
+          Output will appear here...
+        </p>
+      )}
+    </div>
+  );
+};
+
+// Test Cases Panel Component
+const TestCasesPanel = ({
+  theme,
+  testCases,
+  setTestCases,
+  activeTestCase,
+  setActiveTestCase,
+}: {
+  theme: string;
+  testCases: Array<{ id: number; input: string }>;
+  setTestCases: React.Dispatch<
+    React.SetStateAction<Array<{ id: number; input: string }>>
+  >;
+  activeTestCase: number;
+  setActiveTestCase: React.Dispatch<React.SetStateAction<number>>;
+}) => {
+  const addTestCase = () => {
+    const newId = Math.max(...testCases.map((tc) => tc.id)) + 1;
+    const currentActiveCase = testCases.find((tc) => tc.id === activeTestCase);
+    const inputToCopy =
+      currentActiveCase?.input || testCases[testCases.length - 1]?.input || "";
+    setTestCases([...testCases, { id: newId, input: inputToCopy }]);
+    setActiveTestCase(newId);
+  };
+
+  const updateTestCase = (id: number, value: string) => {
+    setTestCases(
+      testCases.map((tc) => (tc.id === id ? { ...tc, input: value } : tc))
+    );
+  };
+
+  const removeTestCase = (id: number) => {
+    if (testCases.length > 1) {
+      setTestCases(testCases.filter((tc) => tc.id !== id));
+      if (activeTestCase === id) {
+        setActiveTestCase(testCases[0].id);
+      }
+    }
+  };
+
+  const activeCase =
+    testCases.find((tc) => tc.id === activeTestCase) || testCases[0];
+
+  return (
+    <div className="space-y-4">
+      {/* Horizontal Case Tabs */}
+      <div className="flex items-center space-x-2">
+        {testCases.map((testCase, index) => (
+          <button
+            key={testCase.id}
+            onClick={() => setActiveTestCase(testCase.id)}
+            className={`px-4 py-2 text-xs rounded-lg transition-all duration-300 transform hover:scale-105 font-medium cursor-pointer ${
+              activeTestCase === testCase.id
+                ? theme === "dark"
+                  ? "bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg shadow-orange-500/25"
+                  : "bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/25"
+                : theme === "dark"
+                ? "bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600 hover:border-gray-500"
+                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400"
+            }`}
+          >
+            Case {index + 1}
+          </button>
+        ))}
+        <button
+          onClick={addTestCase}
+          className={`px-4 py-2 text-xs rounded-lg border transition-all duration-300 transform hover:scale-105 font-medium cursor-pointer ${
+            theme === "dark"
+              ? "bg-gradient-to-r from-gray-700 to-gray-600 border-gray-500 text-gray-300 hover:from-gray-600 hover:to-gray-500 shadow-md"
+              : "bg-gradient-to-r from-white to-gray-50 border-gray-300 text-gray-700 hover:from-gray-50 hover:to-gray-100 shadow-md"
+          }`}
+        >
+          +
+        </button>
+      </div>
+
+      {/* Active Case Input */}
+      {activeCase && (
+        <div
+          className={`p-4 rounded-xl border-2 transition-all duration-300 hover:shadow-lg ${
+            theme === "dark"
+              ? "bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600 hover:border-orange-500/50"
+              : "bg-gradient-to-br from-white to-gray-50 border-gray-300 hover:border-orange-500/50 hover:shadow-orange-500/10"
+          }`}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span
+              className={`text-sm font-medium ${
+                theme === "dark" ? "text-white" : "text-gray-900"
+              }`}
+            >
+              Case {testCases.findIndex((tc) => tc.id === activeTestCase) + 1}
+            </span>
+            {testCases.length > 1 && (
+              <button
+                onClick={() => removeTestCase(activeCase.id)}
+                className={`text-xs px-2 py-1 rounded transition-colors cursor-pointer ${
+                  theme === "dark"
+                    ? "text-red-400 hover:bg-red-900/20"
+                    : "text-red-600 hover:bg-red-50"
+                }`}
+              >
+                Remove
+              </button>
+            )}
+          </div>
+
+          <textarea
+            value={activeCase.input}
+            onChange={(e) => updateTestCase(activeCase.id, e.target.value)}
+            placeholder="nums = [2,7,11,15]\ntarget = 9"
+            rows={3}
+            className={`w-full px-3 py-2 text-sm font-mono rounded border focus:outline-none focus:ring-1 focus:ring-orange-500 resize-none ${
+              theme === "dark"
+                ? "bg-gray-800 border-gray-600 text-white"
+                : "bg-white border-gray-300 text-gray-900"
+            }`}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Results Panel Component
+const ResultsPanel = ({
+  theme,
+  testResults,
+  activeResultCase,
+  setActiveResultCase,
+}: {
+  theme: string;
+  testResults: Array<{
+    case: string;
+    passed: boolean;
+    expected: string;
+    actual: string;
+  }>;
+  activeResultCase: number;
+  setActiveResultCase: React.Dispatch<React.SetStateAction<number>>;
+}) => {
+  if (testResults.length === 0) {
+    return (
+      <div
+        className={`text-center py-8 ${
+          theme === "dark" ? "text-gray-400" : "text-gray-500"
+        }`}
+      >
+        <p className="text-sm">Run your code to see test results...</p>
+      </div>
+    );
+  }
+
+  const activeResult = testResults[activeResultCase - 1] || testResults[0];
+
+  return (
+    <div className="space-y-4">
+      {/* Horizontal Case Tabs */}
+      <div className="flex items-center space-x-2">
+        {testResults.map((result, index) => (
+          <button
+            key={index}
+            onClick={() => setActiveResultCase(index + 1)}
+            className={`px-3 py-1 text-xs rounded transition-colors flex items-center space-x-1 cursor-pointer ${
+              activeResultCase === index + 1
+                ? result.passed
+                  ? theme === "dark"
+                    ? "bg-green-600 text-white"
+                    : "bg-green-500 text-white"
+                  : theme === "dark"
+                  ? "bg-red-600 text-white"
+                  : "bg-red-500 text-white"
+                : theme === "dark"
+                ? "bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600"
+                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            {result.passed ? (
+              <CheckCircleIcon className="text-green-500" />
+            ) : (
+              <XCircleIcon className="text-red-400" />
+            )}
+            <span>Case {index + 1}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Active Result Details */}
+      {activeResult && (
+        <div
+          className={`p-6 rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${
+            theme === "dark"
+              ? "bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600 hover:border-green-500/50"
+              : "bg-gradient-to-br from-white to-gray-50 border-gray-300 hover:border-green-500/50 hover:shadow-green-500/10"
+          }`}
+        >
+          <div className="flex items-center space-x-2 mb-3">
+            {activeResult.passed ? (
+              <CheckCircleIcon className="text-green-500" />
+            ) : (
+              <XCircleIcon className="text-red-500" />
+            )}
+            <span
+              className={`text-sm font-medium ${
+                theme === "dark" ? "text-white" : "text-gray-900"
+              }`}
+            >
+              Test Case {activeResultCase} -{" "}
+              {activeResult.passed ? "Passed" : "Failed"}
+            </span>
+          </div>
+
+          <div className="space-y-3 text-sm">
+            <div>
+              <label
+                className={`block text-xs font-medium mb-1 ${
+                  theme === "dark" ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
+                Input:
+              </label>
+              <div
+                className={`p-3 rounded-lg font-mono text-xs border ${
+                  theme === "dark"
+                    ? "bg-gray-900 text-gray-300 border-gray-700"
+                    : "bg-gray-50 text-gray-700 border-gray-200"
+                }`}
+              >
+                {activeResult.case}
+              </div>
+            </div>
+
+            <div>
+              <label
+                className={`block text-xs font-medium mb-1 ${
+                  theme === "dark" ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
+                Expected:
+              </label>
+              <div
+                className={`p-3 rounded-lg font-mono text-xs border ${
+                  theme === "dark"
+                    ? "bg-green-900/20 text-green-400 border-green-700/50"
+                    : "bg-green-50 text-green-600 border-green-200"
+                }`}
+              >
+                {activeResult.expected}
+              </div>
+            </div>
+
+            <div>
+              <label
+                className={`block text-xs font-medium mb-1 ${
+                  theme === "dark" ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
+                Output:
+              </label>
+              <div
+                className={`p-3 rounded-lg font-mono text-xs border ${
+                  activeResult.passed
+                    ? theme === "dark"
+                      ? "bg-green-900/20 text-green-400 border-green-700/50"
+                      : "bg-green-50 text-green-600 border-green-200"
+                    : theme === "dark"
+                    ? "bg-red-900/20 text-red-400 border-red-700/50"
+                    : "bg-red-50 text-red-600 border-red-200"
+                }`}
+              >
+                {activeResult.actual || "(no output)"}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const languages = [
-  { id: "c", name: "C", template: '#include <stdio.h>\n#include <stdlib.h>\n\nint* twoSum(int* nums, int numsSize, int target, int* returnSize) {\n    // Write your solution here\n    *returnSize = 0;\n    return NULL;\n}' },
-  { id: "cpp", name: "C++", template: 'class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        // Write your solution here\n        return {};\n    }\n};' },
-  { id: "java", name: "Java", template: 'class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // Write your solution here\n        return new int[0];\n    }\n}' },
-  { id: "python", name: "Python", template: 'def twoSum(nums, target):\n    # Write your solution here\n    pass' },
-  { id: "javascript", name: "JavaScript", template: 'function twoSum(nums, target) {\n    // Write your solution here\n}' },
-  { id: "csharp", name: "C#", template: 'public class Solution {\n    public int[] TwoSum(int[] nums, int target) {\n        // Write your solution here\n        return new int[0];\n    }\n}' },
-  { id: "go", name: "Go", template: 'func twoSum(nums []int, target int) []int {\n    // Write your solution here\n    return []int{}\n}' },
-  { id: "php", name: "PHP", template: '<?php\nclass Solution {\n    function twoSum($nums, $target) {\n        // Write your solution here\n        return [];\n    }\n}\n?>' },
-  { id: "kotlin", name: "Kotlin", template: 'class Solution {\n    fun twoSum(nums: IntArray, target: Int): IntArray {\n        // Write your solution here\n        return intArrayOf()\n    }\n}' },
-  { id: "rust", name: "Rust", template: 'impl Solution {\n    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {\n        // Write your solution here\n        vec![]\n    }\n}' },
-  { id: "swift", name: "Swift", template: 'class Solution {\n    func twoSum(_ nums: [Int], _ target: Int) -> [Int] {\n        // Write your solution here\n        return []\n    }\n}' },
-  { id: "ruby", name: "Ruby", template: 'def two_sum(nums, target)\n    # Write your solution here\nend' },
-  { id: "scala", name: "Scala", template: 'object Solution {\n    def twoSum(nums: Array[Int], target: Int): Array[Int] = {\n        // Write your solution here\n        Array()\n    }\n}' },
-  { id: "dart", name: "Dart", template: 'class Solution {\n  List<int> twoSum(List<int> nums, int target) {\n    // Write your solution here\n    return [];\n  }\n}' },
-  { id: "typescript", name: "TypeScript", template: 'function twoSum(nums: number[], target: number): number[] {\n    // Write your solution here\n    return [];\n}' },
-  { id: "r", name: "R", template: 'twoSum <- function(nums, target) {\n    # Write your solution here\n    return(c())\n}' },
-  { id: "perl", name: "Perl", template: 'sub twoSum {\n    my ($nums, $target) = @_;\n    # Write your solution here\n    return [];\n}' },
-  { id: "lua", name: "Lua", template: 'function twoSum(nums, target)\n    -- Write your solution here\n    return {}\nend' },
-  { id: "haskell", name: "Haskell", template: 'twoSum :: [Int] -> Int -> [Int]\ntwoSum nums target = []\n    -- Write your solution here' }
+  {
+    id: "c",
+    name: "C",
+    template:
+      "#include <stdio.h>\n#include <stdlib.h>\n\nint* twoSum(int* nums, int numsSize, int target, int* returnSize) {\n    // Write your solution here\n    *returnSize = 0;\n    return NULL;\n}",
+  },
+  {
+    id: "cpp",
+    name: "C++",
+    template:
+      "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        // Write your solution here\n        return {};\n    }\n};",
+  },
+  {
+    id: "java",
+    name: "Java",
+    template:
+      "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // Write your solution here\n        return new int[0];\n    }\n}",
+  },
+  {
+    id: "python",
+    name: "Python",
+    template:
+      "def twoSum(nums, target):\n    # Write your solution here\n    pass",
+  },
+  {
+    id: "javascript",
+    name: "JavaScript",
+    template:
+      "function twoSum(nums, target) {\n    // Write your solution here\n}",
+  },
 ];
 
 export function EnhancedCompiler() {
   const [selectedLanguage, setSelectedLanguage] = useState("python");
-  const [code, setCode] = useState(languages[0].template);
+  const [code, setCode] = useState(languages[3].template);
   const [isRunning, setIsRunning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [testResults, setTestResults] = useState<
@@ -1008,30 +679,120 @@ export function EnhancedCompiler() {
   const [mounted, setMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(3600);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [activeConsoleTab, setActiveConsoleTab] = useState("testcases");
+  const [testCases, setTestCases] = useState([
+    { id: 1, input: "nums = [2,7,11,15]\ntarget = 9" },
+    { id: 2, input: "nums = [3,2,4]\ntarget = 6" },
+    { id: 3, input: "nums = [3,3]\ntarget = 6" },
+  ]);
+  const [consoleOutput, setConsoleOutput] = useState("");
+  const [activeTestCase, setActiveTestCase] = useState(1);
+  const [activeResultCase, setActiveResultCase] = useState(1);
+  const [isPaused, setIsPaused] = useState(false);
+  const [showTimeOverModal, setShowTimeOverModal] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Set cursor to last line on initial load
-    const lines = languages[0].template.split("\n");
+    const lines = languages[3].template.split("\n");
     setCursorLine(lines.length);
+    
+    // Restore paused assessment state if exists
+    const savedState = localStorage.getItem('pausedAssessment');
+    if (savedState) {
+      try {
+        const assessmentState = JSON.parse(savedState);
+        setTimeLeft(assessmentState.timeLeft || 3600);
+        setCode(assessmentState.code || languages[3].template);
+        setSelectedLanguage(assessmentState.selectedLanguage || "python");
+        setTestCases(assessmentState.testCases || [
+          { id: 1, input: "nums = [2,7,11,15]\ntarget = 9" },
+          { id: 2, input: "nums = [3,2,4]\ntarget = 6" },
+          { id: 3, input: "nums = [3,3]\ntarget = 6" },
+        ]);
+        setActiveTestCase(assessmentState.activeTestCase || 1);
+        setActiveTab(assessmentState.activeTab || "description");
+        setNotes(assessmentState.notes || "");
+        setTestResults(assessmentState.testResults || []);
+        setIsPaused(false); // Resume the assessment
+        // Clear the saved state after restoration
+        localStorage.removeItem('pausedAssessment');
+      } catch (error) {
+        console.error('Failed to restore assessment state:', error);
+      }
+    }
   }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      if (!isPaused) {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            setShowTimeOverModal(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isPaused]);
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleBackToHome = () => {
-    window.location.href = '/';
+    if (window.confirm("Are you sure you want to leave? Your progress will be lost.")) {
+      window.location.href = "/";
+    }
+  };
+
+  const handlePauseTest = () => {
+    if (!isPaused) {
+      if (window.confirm("Do you want to pause the test? You will be redirected to the module page.")) {
+        setIsPaused(true);
+        // Save current state to localStorage
+        const assessmentState = {
+          timeLeft,
+          code,
+          selectedLanguage,
+          testCases,
+          activeTestCase,
+          activeTab,
+          notes,
+          testResults,
+          timestamp: Date.now()
+        };
+        localStorage.setItem('pausedAssessment', JSON.stringify(assessmentState));
+        
+        // Navigate to module page when paused
+        setTimeout(() => {
+          window.location.href = "/courses/dsa-fundamentals/modules/1";
+        }, 500);
+      }
+    } else {
+      setIsPaused(false);
+    }
+  };
+
+  const handleRetakeAssessment = () => {
+    setTimeLeft(3600);
+    setShowTimeOverModal(false);
+    setCode(languages.find(l => l.id === selectedLanguage)?.template || languages[3].template);
+    setTestResults([]);
+    setConsoleOutput("");
+    localStorage.removeItem('pausedAssessment');
+  };
+
+  const handleReviewConcepts = () => {
+    setTimeLeft(3600);
+    localStorage.removeItem('pausedAssessment');
+    window.location.href = "/courses/dsa-fundamentals/modules/1";
   };
 
   const toggleFullscreen = () => {
@@ -1050,7 +811,6 @@ export function EnhancedCompiler() {
       setSelectedLanguage(langId);
       setCode(lang.template);
       setTestResults([]);
-      // Set cursor to last line
       const lines = lang.template.split("\n");
       setCursorLine(lines.length);
     }
@@ -1058,30 +818,24 @@ export function EnhancedCompiler() {
 
   const handleRun = () => {
     setIsRunning(true);
+    setConsoleOutput(
+      "Compiling and running Python...\n\nHello, World!\n\nProcess finished with exit code 0\nExecution time: 0.15s\nMemory used: 1.2 MB"
+    );
     setTimeout(() => {
-      const results = [
-        {
-          case: "nums = [2,7,11,15], target = 9",
-          passed: true,
-          expected: "[0,1]",
-          actual: "[0,1]",
-        },
-        {
-          case: "nums = [3,2,4], target = 6",
-          passed: true,
-          expected: "[1,2]",
-          actual: "[1,2]",
-        },
-        {
-          case: "nums = [3,3], target = 6",
-          passed: false,
-          expected: "[0,1]",
-          actual: "None",
-        },
-      ];
+      const results = testCases.map((testCase) => {
+        const expected = "[0,1]";
+        const actual = Math.random() > 0.5 ? "[0,1]" : "[1,2]";
+        return {
+          case: testCase.input,
+          passed: expected === actual,
+          expected: expected,
+          actual: actual,
+        };
+      });
       setTestResults(results);
       setIsRunning(false);
       setIsTestResultsCollapsed(false);
+      setActiveConsoleTab("results");
     }, 2000);
   };
 
@@ -1098,7 +852,6 @@ export function EnhancedCompiler() {
     if (lang) {
       setCode(lang.template);
       setTestResults([]);
-      // Set cursor to last line after reset
       const lines = lang.template.split("\n");
       setCursorLine(lines.length);
     }
@@ -1151,61 +904,111 @@ export function EnhancedCompiler() {
   const totalTests = testResults.length;
   const codeLines = code.split("\n");
 
-  // Calculate heights for proper layout
-  const consoleHeight = isTestResultsCollapsed ? 48 : testResultsHeight;
-  const mainContentHeight = `calc(100vh - ${consoleHeight}${
-    isTestResultsCollapsed ? "px" : "vh"
-  })`;
-
   return (
-    <div className={`h-screen flex flex-col overflow-hidden ${
-      theme === "dark" 
-        ? "bg-gray-900 text-white" 
-        : "bg-white text-gray-900"
-    }`}>
-      {/* Top Header with Back to Home, Timer, and Pause */}
-      <div className={`h-16 border-b flex items-center justify-between px-6 ${
-        theme === "dark"
-          ? "bg-gray-800 border-gray-600"
-          : "bg-gray-50 border-gray-200"
-      }`}>
-        <button
-          onClick={handleBackToHome}
-          className={`flex items-center space-x-2 px-3 py-2 rounded transition-colors ${
-            theme === "dark"
-              ? "text-gray-300 hover:text-white hover:bg-gray-700"
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-          }`}
-        >
-          <ArrowLeftIcon />
-          <span>Back to Home</span>
-        </button>
-        
+    <div
+      className={`h-screen flex flex-col overflow-hidden ${
+        theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+      }`}
+    >
+      {/* Assessment Header */}
+      <div
+        className={`h-16 border-b flex items-center justify-between px-6 flex-shrink-0 ${
+          theme === "dark"
+            ? "bg-gray-800 border-gray-700"
+            : "bg-white border-gray-200"
+        }`}
+      >
+        {/* Left Section - Back to Home */}
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 text-sm">
-            <ClockIcon className={theme === "dark" ? "text-gray-400" : "text-gray-500"} />
-            <span className={`font-mono ${
-              timeLeft < 300 
-                ? "text-red-500" 
-                : theme === "dark" ? "text-white" : "text-gray-900"
-            }`}>
+          <button
+            onClick={handleBackToHome}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors cursor-pointer ${
+              theme === "dark"
+                ? "text-gray-300 hover:bg-gray-700 hover:text-white"
+                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            }`}
+          >
+            <ArrowLeftIcon />
+            <span className="font-medium">Back to Home</span>
+          </button>
+        </div>
+
+        {/* Center Section - Assessment Title */}
+        <div className="flex items-center space-x-3">
+          <h1
+            className={`text-xl font-bold ${
+              theme === "dark" ? "text-white" : "text-gray-900"
+            }`}
+          >
+            DSA Assessment
+          </h1>
+          <Badge
+            className={`px-3 py-1 text-sm font-medium ${
+              theme === "dark"
+                ? "bg-blue-600 text-white"
+                : "bg-blue-500 text-white"
+            }`}
+          >
+            In Progress
+          </Badge>
+        </div>
+
+        {/* Right Section - Timer and Controls */}
+        <div className="flex items-center space-x-4">
+          {/* Timer */}
+          <div
+            className={`flex items-center space-x-1 px-3 py-1.5 rounded-md border text-sm ${
+              timeLeft <= 300
+                ? theme === "dark"
+                  ? "bg-red-900/20 border-red-600 text-red-400"
+                  : "bg-red-50 border-red-300 text-red-600"
+                : theme === "dark"
+                ? "bg-gray-700 border-gray-600 text-gray-300"
+                : "bg-gray-50 border-gray-300 text-gray-700"
+            }`}
+          >
+            <ClockIcon />
+            <span className="font-mono font-semibold">
               {formatTime(timeLeft)}
             </span>
           </div>
-          <button className={`flex items-center space-x-2 px-3 py-2 border rounded transition-colors ${
-            theme === "dark"
-              ? "border-gray-600 text-gray-300 hover:bg-orange-900/20 hover:text-orange-300 hover:border-orange-700"
-              : "border-gray-300 text-gray-700 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-300"
-          }`}>
-            <PauseIcon />
-            <span>Pause Test</span>
+
+          {/* Pause/Resume Button */}
+          <button
+            onClick={handlePauseTest}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md border transition-colors cursor-pointer text-sm ${
+              isPaused
+                ? theme === "dark"
+                  ? "border-green-500 text-green-400 hover:bg-green-500/10"
+                  : "border-green-500 text-green-600 hover:bg-green-50"
+                : theme === "dark"
+                ? "border-yellow-500 text-yellow-400 hover:bg-yellow-500/10"
+                : "border-yellow-500 text-yellow-600 hover:bg-yellow-50"
+            }`}
+          >
+            {isPaused ? <PlayIcon /> : <PauseIcon />}
+            <span className="font-medium">
+              {isPaused ? "Resume" : "Pause"}
+            </span>
+          </button>
+
+          {/* Fullscreen Toggle */}
+          <button
+            onClick={toggleFullscreen}
+            className={`p-2 rounded-lg transition-colors cursor-pointer ${
+              theme === "dark"
+                ? "text-gray-300 hover:bg-gray-700 hover:text-white"
+                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            }`}
+          >
+            {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
           </button>
         </div>
       </div>
-      
-      {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden" style={{ height: "calc(100vh - 64px)" }}>
-        {/* Left Panel - Problem Description */}
+
+      {/* Main Content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left Panel */}
         <div
           className={`border-r flex flex-col ${
             theme === "dark"
@@ -1214,38 +1017,52 @@ export function EnhancedCompiler() {
           }`}
           style={{ width: `${leftPanelWidth}%` }}
         >
-          {/* Left Panel Header */}
-          <div className={`h-12 border-b flex items-center justify-between px-4 ${
-            theme === "dark"
-              ? "bg-gray-700 border-gray-600"
-              : "bg-gray-50 border-gray-200"
-          }`}>
+          <div
+            className={`h-12 border-b flex items-center justify-between px-4 relative ${
+              theme === "dark"
+                ? "bg-gradient-to-r from-gray-800 to-gray-700 border-gray-600"
+                : "bg-gradient-to-r from-gray-50 to-blue-50 border-gray-200"
+            }`}
+          >
+            {/* Subtle glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-500/5 to-transparent"></div>
             <div className="flex items-center space-x-4">
-              <h1 className={`text-lg font-bold ${
-                theme === "dark" ? "text-white" : "text-gray-900"
-              }`}>1. Two Sum</h1>
-              <Badge className={`text-xs px-2 py-1 ${
-                theme === "dark"
-                  ? "bg-green-900/40 text-green-300"
-                  : "bg-green-100 text-green-700"
-              }`}>
+              <h1
+                className={`text-lg font-bold ${
+                  theme === "dark" ? "text-white" : "text-gray-900"
+                }`}
+              >
+                1. Two Sum
+              </h1>
+              <Badge
+                className={`text-xs px-3 py-1 rounded-full font-medium shadow-sm ${
+                  theme === "dark"
+                    ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white"
+                    : "bg-gradient-to-r from-green-500 to-emerald-500 text-white"
+                }`}
+              >
                 Easy
               </Badge>
             </div>
           </div>
 
-          {/* Tab Navigation */}
-          <div className={`flex border-b ${
-            theme === "dark"
-              ? "border-gray-600 bg-gray-750"
-              : "border-gray-200 bg-gray-50"
-          }`}>
+          <div
+            className={`flex border-b ${
+              theme === "dark"
+                ? "border-gray-600 bg-gray-750"
+                : "border-gray-200 bg-gray-50"
+            }`}
+          >
             <button
               onClick={() => setActiveTab("description")}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center ${
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center cursor-pointer ${
                 activeTab === "description"
-                  ? "border-orange-500 text-orange-400" + (theme === "dark" ? " bg-gray-800" : " bg-white")
-                  : "border-transparent" + (theme === "dark" ? " text-gray-400 hover:text-gray-300" : " text-gray-600 hover:text-gray-900")
+                  ? "border-orange-500 text-orange-400" +
+                    (theme === "dark" ? " bg-gray-800" : " bg-white")
+                  : "border-transparent" +
+                    (theme === "dark"
+                      ? " text-gray-400 hover:text-gray-300"
+                      : " text-gray-600 hover:text-gray-900")
               }`}
             >
               <BookOpenIcon />
@@ -1253,21 +1070,44 @@ export function EnhancedCompiler() {
             </button>
             <button
               onClick={() => setActiveTab("solution")}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center ${
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center cursor-pointer ${
                 activeTab === "solution"
-                  ? "border-orange-500 text-orange-400" + (theme === "dark" ? " bg-gray-800" : " bg-white")
-                  : "border-transparent" + (theme === "dark" ? " text-gray-400 hover:text-gray-300" : " text-gray-600 hover:text-gray-900")
+                  ? "border-orange-500 text-orange-400" +
+                    (theme === "dark" ? " bg-gray-800" : " bg-white")
+                  : "border-transparent" +
+                    (theme === "dark"
+                      ? " text-gray-400 hover:text-gray-300"
+                      : " text-gray-600 hover:text-gray-900")
               }`}
             >
               <FileTextIcon />
               <span className="ml-2">Solution</span>
             </button>
             <button
+              onClick={() => setActiveTab("submissions")}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center cursor-pointer ${
+                activeTab === "submissions"
+                  ? "border-orange-500 text-orange-400" +
+                    (theme === "dark" ? " bg-gray-800" : " bg-white")
+                  : "border-transparent" +
+                    (theme === "dark"
+                      ? " text-gray-400 hover:text-gray-300"
+                      : " text-gray-600 hover:text-gray-900")
+              }`}
+            >
+              <SendIcon />
+              <span className="ml-2">Submissions</span>
+            </button>
+            <button
               onClick={() => setActiveTab("notes")}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center ${
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center cursor-pointer ${
                 activeTab === "notes"
-                  ? "border-orange-500 text-orange-400" + (theme === "dark" ? " bg-gray-800" : " bg-white")
-                  : "border-transparent" + (theme === "dark" ? " text-gray-400 hover:text-gray-300" : " text-gray-600 hover:text-gray-900")
+                  ? "border-orange-500 text-orange-400" +
+                    (theme === "dark" ? " bg-gray-800" : " bg-white")
+                  : "border-transparent" +
+                    (theme === "dark"
+                      ? " text-gray-400 hover:text-gray-300"
+                      : " text-gray-600 hover:text-gray-900")
               }`}
             >
               <StickyNoteIcon />
@@ -1275,107 +1115,68 @@ export function EnhancedCompiler() {
             </button>
           </div>
 
-          {/* Tab Content */}
           <div className="flex-1 overflow-auto">
             {activeTab === "description" && (
               <div className="p-6">
-                <div className={`space-y-4 text-sm ${
-                  theme === "dark" ? "text-gray-300" : "text-gray-700"
-                }`}>
+                <div
+                  className={`space-y-4 text-sm ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
                   <p>
                     Given an array of integers{" "}
-                    <code className={`px-1.5 py-0.5 rounded ${
-                      theme === "dark"
-                        ? "bg-gray-700 text-orange-400"
-                        : "bg-gray-100 text-orange-600"
-                    }`}>
+                    <code
+                      className={`px-1.5 py-0.5 rounded ${
+                        theme === "dark"
+                          ? "bg-gray-700 text-orange-400"
+                          : "bg-gray-100 text-orange-600"
+                      }`}
+                    >
                       nums
                     </code>{" "}
                     and an integer{" "}
-                    <code className={`px-1.5 py-0.5 rounded ${
-                      theme === "dark"
-                        ? "bg-gray-700 text-orange-400"
-                        : "bg-gray-100 text-orange-600"
-                    }`}>
+                    <code
+                      className={`px-1.5 py-0.5 rounded ${
+                        theme === "dark"
+                          ? "bg-gray-700 text-orange-400"
+                          : "bg-gray-100 text-orange-600"
+                      }`}
+                    >
                       target
                     </code>
-                    , return{" "}
-                    <em className={theme === "dark" ? "text-gray-200" : "text-gray-800"}>
-                      indices of the two numbers such that they add up to target
-                    </em>
-                    .
+                    , return indices of the two numbers such that they add up to
+                    target.
                   </p>
-                  <p>
-                    You may assume that each input would have{" "}
-                    <strong className={theme === "dark" ? "text-white" : "text-gray-900"}>
-                      exactly one solution
-                    </strong>
-                    , and you may not use the same element twice.
-                  </p>
-
-                  <div className="space-y-4">
-                    <div className={`p-4 rounded-lg border ${
-                      theme === "dark"
-                        ? "bg-gray-750 border-gray-600"
-                        : "bg-gray-50 border-gray-200"
-                    }`}>
-                      <div className={`text-sm font-medium mb-3 ${
-                        theme === "dark" ? "text-white" : "text-gray-900"
-                      }`}>
-                        Example 1:
-                      </div>
-                      <div className="font-mono text-sm space-y-1">
-                        <div>
-                          <span className={`font-medium ${
-                            theme === "dark" ? "text-white" : "text-gray-900"
-                          }`}>Input:</span>{" "}
-                          <span className={theme === "dark" ? "text-gray-300" : "text-gray-600"}>
-                            nums = [2,7,11,15], target = 9
-                          </span>
-                        </div>
-                        <div>
-                          <span className={`font-medium ${
-                            theme === "dark" ? "text-white" : "text-gray-900"
-                          }`}>
-                            Output:
-                          </span>{" "}
-                          <span className={theme === "dark" ? "text-gray-300" : "text-gray-600"}>[0,1]</span>
-                        </div>
-                        <div>
-                          <span className={`font-medium ${
-                            theme === "dark" ? "text-white" : "text-gray-900"
-                          }`}>
-                            Explanation:
-                          </span>{" "}
-                          <span className={theme === "dark" ? "text-gray-300" : "text-gray-600"}>
-                            Because nums[0] + nums[1] == 9, we return [0, 1].
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             )}
 
             {activeTab === "solution" && (
               <div className="p-6">
-                <h3 className={`text-lg font-semibold mb-4 ${
-                  theme === "dark" ? "text-white" : "text-gray-900"
-                }`}>
+                <h3
+                  className={`text-lg font-semibold mb-4 ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
+                >
                   Solution Approach
                 </h3>
-                <div className={`space-y-4 text-sm ${
-                  theme === "dark" ? "text-gray-300" : "text-gray-700"
-                }`}>
-                  <div className={`p-4 rounded-lg border ${
-                    theme === "dark"
-                      ? "bg-gray-750 border-gray-600"
-                      : "bg-gray-50 border-gray-200"
-                  }`}>
-                    <h4 className={`font-medium mb-2 ${
-                      theme === "dark" ? "text-white" : "text-gray-900"
-                    }`}>
+                <div
+                  className={`space-y-4 text-sm ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  <div
+                    className={`p-4 rounded-lg border ${
+                      theme === "dark"
+                        ? "bg-gray-750 border-gray-600"
+                        : "bg-gray-50 border-gray-200"
+                    }`}
+                  >
+                    <h4
+                      className={`font-medium mb-2 ${
+                        theme === "dark" ? "text-white" : "text-gray-900"
+                      }`}
+                    >
                       Hash Map Approach
                     </h4>
                     <p className="mb-3">
@@ -1387,11 +1188,34 @@ export function EnhancedCompiler() {
               </div>
             )}
 
+            {activeTab === "submissions" && (
+              <div className="p-6">
+                <h3
+                  className={`text-lg font-semibold mb-4 ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  Submissions
+                </h3>
+                <div
+                  className={`text-center py-8 ${
+                    theme === "dark" ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  <p className="text-sm">
+                    No submissions yet. Submit your solution to see history.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {activeTab === "notes" && (
               <div className="p-6">
-                <h3 className={`text-lg font-semibold mb-4 ${
-                  theme === "dark" ? "text-white" : "text-gray-900"
-                }`}>
+                <h3
+                  className={`text-lg font-semibold mb-4 ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
+                >
                   Personal Notes
                 </h3>
                 <textarea
@@ -1412,8 +1236,8 @@ export function EnhancedCompiler() {
         {/* Vertical Resizer */}
         <div
           className={`w-1 hover:bg-orange-500 cursor-col-resize flex items-center justify-center group ${
-            theme === "dark" 
-              ? "bg-gray-600 text-gray-400" 
+            theme === "dark"
+              ? "bg-gray-600 text-gray-400"
               : "bg-gray-300 text-gray-500"
           }`}
           onMouseDown={handleVerticalResize}
@@ -1421,20 +1245,24 @@ export function EnhancedCompiler() {
           <GripVerticalIcon />
         </div>
 
-        {/* Right Panel - Code Editor with Console at Bottom */}
-        <div className={`flex-1 flex flex-col h-full ${
-          theme === "dark" ? "bg-gray-900" : "bg-white"
-        }`}>
+        {/* Right Panel */}
+        <div
+          className={`flex-1 flex flex-col h-full ${
+            theme === "dark" ? "bg-gray-900" : "bg-white"
+          }`}
+        >
           {/* Code Editor Header */}
-          <div className={`h-12 border-b flex items-center justify-between px-4 flex-shrink-0 ${
-            theme === "dark"
-              ? "bg-gray-800 border-gray-600"
-              : "bg-gray-50 border-gray-200"
-          }`}>
+          <div
+            className={`h-12 border-b flex items-center justify-between px-4 flex-shrink-0 ${
+              theme === "dark"
+                ? "bg-gray-800 border-gray-600"
+                : "bg-gray-50 border-gray-200"
+            }`}
+          >
             <select
               value={selectedLanguage}
               onChange={(e) => handleLanguageChange(e.target.value)}
-              className={`text-sm px-3 py-1.5 rounded border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+              className={`text-sm px-3 py-1.5 rounded border focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer ${
                 theme === "dark"
                   ? "bg-gray-700 border-gray-600 text-white"
                   : "bg-white border-gray-300 text-gray-900"
@@ -1449,48 +1277,37 @@ export function EnhancedCompiler() {
 
             <div className="flex items-center space-x-3">
               <button
-                className={`p-2 rounded transition-colors ${
+                className={`p-2 rounded transition-colors cursor-pointer ${
                   theme === "dark"
                     ? "hover:bg-gray-700 text-gray-300"
                     : "hover:bg-gray-100 text-gray-600"
                 }`}
                 onClick={handleReset}
-                title="Reset Code"
               >
                 <ResetIcon />
               </button>
               <button
-                className={`p-2 rounded transition-colors ${
-                  theme === "dark"
-                    ? "hover:bg-gray-700 text-gray-300"
-                    : "hover:bg-gray-100 text-gray-600"
-                }`}
-                onClick={toggleFullscreen}
-                title="Toggle Fullscreen"
-              >
-                {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
-              </button>
-              <button
-                className={`p-2 rounded transition-colors ${
+                className={`p-2 rounded transition-colors cursor-pointer ${
                   theme === "dark"
                     ? "hover:bg-gray-700 text-gray-300"
                     : "hover:bg-gray-100 text-gray-600"
                 }`}
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                title="Toggle Theme"
               >
                 {mounted && (theme === "dark" ? <SunIcon /> : <MoonIcon />)}
               </button>
-              <div className={`h-6 w-px ${
-                theme === "dark" ? "bg-gray-600" : "bg-gray-300"
-              }`}></div>
+              <div
+                className={`h-6 w-px ${
+                  theme === "dark" ? "bg-gray-600" : "bg-gray-300"
+                }`}
+              ></div>
               <button
                 onClick={handleRun}
                 disabled={isRunning}
-                className={`px-4 py-2.5 text-white text-sm font-medium rounded-lg flex items-center space-x-2 disabled:opacity-50 transition-all duration-200 shadow-md hover:shadow-lg ${
+                className={`px-4 py-2 border text-sm font-medium rounded-lg flex items-center space-x-2 disabled:opacity-50 transition-colors cursor-pointer ${
                   theme === "dark"
-                    ? "bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 border border-gray-500"
-                    : "bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 border border-gray-400"
+                    ? "border-green-600 text-green-400 hover:bg-green-600 hover:text-white"
+                    : "border-green-500 text-green-600 hover:bg-green-500 hover:text-white"
                 }`}
               >
                 <PlayIcon />
@@ -1499,10 +1316,10 @@ export function EnhancedCompiler() {
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className={`px-4 py-2.5 text-white text-sm font-medium rounded-lg flex items-center space-x-2 disabled:opacity-50 transition-all duration-200 shadow-md hover:shadow-lg ${
+                className={`px-4 py-2 border text-sm font-medium rounded-lg flex items-center space-x-2 disabled:opacity-50 transition-colors cursor-pointer ${
                   theme === "dark"
-                    ? "bg-gradient-to-r from-indigo-500 to-indigo-400 hover:from-indigo-400 hover:to-indigo-300 border border-indigo-300"
-                    : "bg-gradient-to-r from-indigo-400 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 border border-indigo-300"
+                    ? "border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white"
+                    : "border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white"
                 }`}
               >
                 <SendIcon />
@@ -1516,16 +1333,18 @@ export function EnhancedCompiler() {
             className="flex overflow-hidden"
             style={{
               height: isTestResultsCollapsed
-                ? "calc(100% - 48px - 48px)" // header + collapsed console
-                : `calc(100% - 48px - ${testResultsHeight}vh)`, // header + expanded console
+                ? "calc(100% - 48px)"
+                : `calc(100% - 48px - ${testResultsHeight}vh)`,
             }}
           >
             {/* Line Numbers */}
-            <div className={`w-16 border-r flex flex-col font-mono select-none ${
-              theme === "dark"
-                ? "bg-gray-850 border-gray-600 text-gray-500"
-                : "bg-gray-50 border-gray-200 text-gray-400"
-            }`}>
+            <div
+              className={`w-16 border-r flex flex-col font-mono select-none ${
+                theme === "dark"
+                  ? "bg-gray-850 border-gray-600 text-gray-500"
+                  : "bg-gray-50 border-gray-200 text-gray-400"
+              }`}
+            >
               <div className="flex-1 overflow-y-auto pt-4 pb-4">
                 {codeLines.map((_, index) => (
                   <div
@@ -1559,22 +1378,6 @@ export function EnhancedCompiler() {
                   const lineNumber = textBeforeCursor.split("\n").length;
                   setCursorLine(lineNumber);
                 }}
-                onKeyUp={(e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  const cursorPos = target.selectionStart;
-                  const textBeforeCursor = code.substring(0, cursorPos);
-                  const lineNumber = textBeforeCursor.split("\n").length;
-                  setCursorLine(lineNumber);
-                }}
-                onScroll={(e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  const lineNumbersDiv = document.querySelector(
-                    ".w-16.bg-gray-850 .overflow-y-auto"
-                  ) as HTMLElement;
-                  if (lineNumbersDiv) {
-                    lineNumbersDiv.scrollTop = target.scrollTop;
-                  }
-                }}
                 className={`w-full h-full px-4 py-4 font-mono text-sm resize-none focus:outline-none border-0 leading-6 ${
                   theme === "dark"
                     ? "bg-gray-900 text-white"
@@ -1591,18 +1394,25 @@ export function EnhancedCompiler() {
             </div>
           </div>
 
-          {/* Console/Test Results - Only on Right Side */}
-          <div className={`border-t-2 flex flex-col flex-shrink-0 h-12 min-h-12 ${
-            theme === "dark"
-              ? "bg-gray-800 border-gray-600"
-              : "bg-gray-50 border-gray-200"
-          }`}>
+          {/* Test Cases & Results Panel */}
+          <div
+            className={`border-t flex flex-col ${
+              theme === "dark"
+                ? "bg-gray-800 border-gray-600"
+                : "bg-gray-50 border-gray-200"
+            }`}
+            style={{
+              height: isTestResultsCollapsed
+                ? "48px"
+                : `${testResultsHeight}vh`,
+            }}
+          >
             {/* Horizontal Resizer */}
             {!isTestResultsCollapsed && (
               <div
                 className={`h-1 hover:bg-orange-500 cursor-row-resize flex items-center justify-center group ${
-                  theme === "dark" 
-                    ? "bg-gray-600 text-gray-400" 
+                  theme === "dark"
+                    ? "bg-gray-600 text-gray-400"
                     : "bg-gray-300 text-gray-500"
                 }`}
                 onMouseDown={handleHorizontalResize}
@@ -1613,37 +1423,85 @@ export function EnhancedCompiler() {
               </div>
             )}
 
-            {/* Console Header */}
-            <div className={`h-full flex items-center justify-between px-4 flex-shrink-0 ${
-              theme === "dark" ? "bg-gray-750" : "bg-gray-100"
-            }`}>
-              <div className="flex items-center space-x-3">
-                <span className={`font-medium text-sm ${
-                  theme === "dark" ? "text-white" : "text-gray-900"
-                }`}>Console</span>
-                {testResults.length > 0 && (
-                  <Badge
-                    className={`text-xs ${
-                      passedTests === totalTests
-                        ? theme === "dark"
-                          ? "bg-green-900/40 text-green-300"
-                          : "bg-green-100 text-green-700"
-                        : theme === "dark"
-                        ? "bg-red-900/40 text-red-300"
-                        : "bg-red-100 text-red-700"
+            {/* Panel Header */}
+            <div
+              className={`h-12 flex items-center justify-between px-4 flex-shrink-0 ${
+                theme === "dark" ? "bg-gray-750" : "bg-gray-100"
+              }`}
+            >
+              {isTestResultsCollapsed ? (
+                <span
+                  className={`text-sm font-medium ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  Console
+                </span>
+              ) : (
+                <div className="flex items-center space-x-6">
+                  <button
+                    onClick={() => setActiveConsoleTab("testcases")}
+                    className={`text-sm font-medium pb-1 border-b-2 transition-colors cursor-pointer ${
+                      activeConsoleTab === "testcases"
+                        ? "border-orange-500 text-orange-400"
+                        : "border-transparent" +
+                          (theme === "dark"
+                            ? " text-gray-400 hover:text-gray-300"
+                            : " text-gray-600 hover:text-gray-900")
                     }`}
                   >
-                    {passedTests}/{totalTests} Passed
-                  </Badge>
-                )}
-              </div>
+                    Test Case
+                  </button>
+                  <button
+                    onClick={() => setActiveConsoleTab("console")}
+                    className={`text-sm font-medium pb-1 border-b-2 transition-colors cursor-pointer ${
+                      activeConsoleTab === "console"
+                        ? "border-orange-500 text-orange-400"
+                        : "border-transparent" +
+                          (theme === "dark"
+                            ? " text-gray-400 hover:text-gray-300"
+                            : " text-gray-600 hover:text-gray-900")
+                    }`}
+                  >
+                    Output
+                  </button>
+                  <button
+                    onClick={() => setActiveConsoleTab("results")}
+                    className={`text-sm font-medium pb-1 border-b-2 transition-colors flex items-center space-x-2 cursor-pointer ${
+                      activeConsoleTab === "results"
+                        ? "border-orange-500 text-orange-400"
+                        : "border-transparent" +
+                          (theme === "dark"
+                            ? " text-gray-400 hover:text-gray-300"
+                            : " text-gray-600 hover:text-gray-900")
+                    }`}
+                  >
+                    <span>Results</span>
+                    {testResults.length > 0 && (
+                      <Badge
+                        className={`text-xs ${
+                          passedTests === totalTests
+                            ? theme === "dark"
+                              ? "bg-green-900/40 text-green-300"
+                              : "bg-green-100 text-green-700"
+                            : theme === "dark"
+                            ? "bg-red-900/40 text-red-300"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {passedTests}/{totalTests}
+                      </Badge>
+                    )}
+                  </button>
+                </div>
+              )}
               <button
                 onClick={() =>
                   setIsTestResultsCollapsed(!isTestResultsCollapsed)
                 }
-                className={`p-2 rounded transition-colors ${
-                  theme === "dark" 
-                    ? "hover:bg-gray-700 text-gray-300" 
+                className={`p-2 rounded transition-colors cursor-pointer ${
+                  theme === "dark"
+                    ? "hover:bg-gray-700 text-gray-300"
                     : "hover:bg-gray-200 text-gray-600"
                 }`}
               >
@@ -1655,10 +1513,84 @@ export function EnhancedCompiler() {
               </button>
             </div>
 
-
+            {/* Panel Content */}
+            {!isTestResultsCollapsed && (
+              <div className="flex-1 overflow-auto">
+                {activeConsoleTab === "testcases" && (
+                  <div className="p-4">
+                    <TestCasesPanel
+                      theme={theme}
+                      testCases={testCases}
+                      setTestCases={setTestCases}
+                      activeTestCase={activeTestCase}
+                      setActiveTestCase={setActiveTestCase}
+                    />
+                  </div>
+                )}
+                {activeConsoleTab === "console" && (
+                  <div className="p-4">
+                    <ConsolePanel theme={theme} consoleOutput={consoleOutput} />
+                  </div>
+                )}
+                {activeConsoleTab === "results" && (
+                  <div className="p-4">
+                    <ResultsPanel
+                      theme={theme}
+                      testResults={testResults}
+                      activeResultCase={activeResultCase}
+                      setActiveResultCase={setActiveResultCase}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Time Over Modal */}
+      {showTimeOverModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className={`rounded-lg p-6 max-w-md w-full mx-4 ${
+            theme === "dark" ? "bg-gray-800 border border-gray-600" : "bg-white border border-gray-200"
+          }`}>
+            <div className="text-center">
+              <div className={`text-6xl mb-4 ${
+                theme === "dark" ? "text-red-400" : "text-red-500"
+              }`}>⏰</div>
+              <h2 className={`text-2xl font-bold mb-2 ${
+                theme === "dark" ? "text-white" : "text-gray-900"
+              }`}>Time's Up!</h2>
+              <p className={`mb-6 ${
+                theme === "dark" ? "text-gray-300" : "text-gray-600"
+              }`}>Your assessment time has ended. What would you like to do?</p>
+              
+              <div className="flex flex-col space-y-3">
+                <button
+                  onClick={handleRetakeAssessment}
+                  className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                    theme === "dark"
+                      ? "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-blue-500 hover:bg-blue-600 text-white"
+                  }`}
+                >
+                  Retake Assessment
+                </button>
+                <button
+                  onClick={handleReviewConcepts}
+                  className={`px-6 py-3 rounded-lg font-medium border transition-colors ${
+                    theme === "dark"
+                      ? "border-gray-600 text-gray-300 hover:bg-gray-700"
+                      : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  Review Concepts
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -117,6 +117,7 @@ export default function ModulePage({
   const [mounted, setMounted] = useState(false)
   const [completedLessons, setCompletedLessons] = useState<string[]>([])
   const [moduleData, setModuleData] = useState(initialModuleData)
+  const [hasPausedAssessment, setHasPausedAssessment] = useState(false)
 
   const handleResetProgress = () => {
     if (confirm('Are you sure you want to reset all progress for this module? This action cannot be undone.')) {
@@ -145,6 +146,10 @@ export default function ModulePage({
 
   useEffect(() => {
     setMounted(true)
+    
+    // Check for paused assessment
+    const pausedAssessment = localStorage.getItem('pausedAssessment')
+    setHasPausedAssessment(!!pausedAssessment)
     
     // Load progress from localStorage
     const progress = JSON.parse(localStorage.getItem('moduleProgress') || '{}')
@@ -380,14 +385,14 @@ export default function ModulePage({
                           Locked
                         </Button>
                       ) : (
-                        <Link href={lesson.type === "quiz" ? `/courses/${params.courseId}/modules/${params.moduleId}/quiz` : `/courses/${params.courseId}/modules/${params.moduleId}/lessons/${lesson.id}`}>
+                        <Link href={lesson.type === "quiz" ? (hasPausedAssessment ? `/assessment` : `/courses/${params.courseId}/modules/${params.moduleId}/quiz`) : `/courses/${params.courseId}/modules/${params.moduleId}/lessons/${lesson.id}`}>
                           <Button size="sm" variant={lesson.status === "completed" ? "outline" : "default"}>
                             {lesson.status === "completed"
                               ? "Review"
                               : lesson.status === "current"
                                 ? "Continue"
                                 : lesson.type === "quiz" && lesson.status === "available"
-                                  ? "Take Quiz"
+                                  ? (hasPausedAssessment ? "Resume Quiz" : "Take Quiz")
                                   : "Start"}
                             <ArrowRight className="ml-2 w-4 h-4" />
                           </Button>

@@ -230,8 +230,23 @@ export function QuizInterface() {
   if (showResults) {
     const passed = score >= passingScore;
     return (
-      <div className="h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 px-6 pt-4 overflow-hidden">
-        <div className="max-w-2xl mx-auto h-full overflow-y-auto">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 px-6 py-8">
+        {/* Header with Back Button */}
+        <div className="flex items-center justify-between mb-8 max-w-4xl mx-auto">
+          <Button
+            variant="outline"
+            onClick={() => window.history.back()}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Module
+          </Button>
+          <div className="text-sm text-muted-foreground">
+            Quiz Completed
+          </div>
+        </div>
+        
+        <div className="max-w-2xl mx-auto">
           <div className="relative">
             {/* Floating decorative elements */}
             <div className="absolute -top-4 -left-4 w-8 h-8 bg-purple-400/20 rounded-full blur-sm"></div>

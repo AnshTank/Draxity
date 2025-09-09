@@ -125,5 +125,9 @@ export default function QuizPage({
     notFound();
   }
 
-  return <QuizInterface quizData={quiz} courseId={params.courseId} moduleId={params.moduleId} />;
+  return (
+    <div className="quiz-container">
+      <QuizInterface quizData={quiz} courseId={params.courseId} moduleId={params.moduleId} />
+    </div>
+  );
 }
