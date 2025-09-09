@@ -231,7 +231,7 @@ const SYNTAX_PATTERNS: Record<string, any> = {
       comment: "#6A9955",
       number: "#B5CEA8",
       function: "#DCDCAA",
-      variable: "#9CDCFE",g
+      variable: "#9CDCFE",
     },
   },
 };

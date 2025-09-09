@@ -171,6 +171,8 @@ int main() {
   const [cursorLine, setCursorLine] = useState(4);
   const { theme: globalTheme } = useTheme();
   const [localTheme, setLocalTheme] = useState("light");
+  const [editorInstance, setEditorInstance] = useState<any>(null);
+  const [validationTimeout, setValidationTimeout] = useState<NodeJS.Timeout | null>(null);
 
 
   useEffect(() => {
@@ -304,6 +306,53 @@ int main() {
   useEffect(() => {
     positionCursorAtEnd();
   }, [selectedLanguage]);
+
+  const validateSyntax = async (editor: any) => {
+    if (!editor || selectedLanguage !== 'cpp') return;
+    
+    try {
+      const response = await fetch('/api/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: editor.getValue(), language: 'cpp' })
+      });
+      
+      if (response.ok) {
+        const { errors } = await response.json();
+        const model = editor.getModel();
+        
+        if (model && window.monaco) {
+          // Clear existing markers
+          window.monaco.editor.setModelMarkers(model, 'cpp-validation', []);
+          
+          // Add new error markers
+          const markers = errors.map((error: any) => ({
+            startLineNumber: error.line,
+            startColumn: error.column,
+            endLineNumber: error.line,
+            endColumn: Math.min(error.column + 20, model.getLineLength(error.line) + 1),
+            message: error.message,
+            severity: error.severity === 'error' ? window.monaco.MarkerSeverity.Error : window.monaco.MarkerSeverity.Warning
+          }));
+          
+          window.monaco.editor.setModelMarkers(model, 'cpp-validation', markers);
+        }
+      }
+    } catch (error) {
+      console.error('Syntax validation failed:', error);
+    }
+  };
+
+  // Debounced validation
+  useEffect(() => {
+    if (!editorInstance) return;
+    
+    const timeoutId = setTimeout(() => {
+      validateSyntax(editorInstance);
+    }, 1000); // Validate after 1 second of no changes
+    
+    return () => clearTimeout(timeoutId);
+  }, [code, editorInstance]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -511,10 +560,11 @@ int main() {
             <div
               className={`w-14 flex flex-col font-mono select-none border-r ${
                 localTheme === "dark"
-                  ? "bg-gray-950 border-gray-800 text-gray-500"
-                  : "bg-gray-50 border-gray-200 text-gray-400"
+                  ? "border-gray-800 text-gray-500"
+                  : "border-gray-200 text-gray-400"
               }`}
               style={{
+                backgroundColor: localTheme === 'dark' ? '#1e1e1e' : '#ffffff',
                 paddingTop: `${paddingTop}px`,
                 fontSize: `${fontSize}px`,
                 lineHeight: lineHeight,
@@ -543,9 +593,10 @@ int main() {
             </div>
 
             {/* Breathing Space */}
-            <div className={`w-4 ${
-              localTheme === "dark" ? "bg-black" : "bg-gray-50"
-            }`}></div>
+            <div className={`w-4`}
+              style={{
+                backgroundColor: localTheme === 'dark' ? '#1e1e1e' : '#ffffff'
+              }}></div>
 
             {/* Monaco Editor */}
             <div className="flex-1">
@@ -553,7 +604,9 @@ int main() {
                 height="100%"
                 language="cpp"
                 value={code}
-                onChange={(value) => setCode(value || '')}
+                onChange={(value) => {
+                  setCode(value || '');
+                }}
                 theme={localTheme === 'dark' ? 'vs-dark' : 'vs'}
                 options={{
                   fontSize: 18,
@@ -594,12 +647,14 @@ int main() {
                     inherit: true,
                     rules: [],
                     colors: {
-                      'editor.background': '#f9fafb',
+                      'editor.background': '#ffffff',
                       'editor.foreground': '#1f2937',
                     }
                   });
                 }}
                 onMount={(editor) => {
+                  setEditorInstance(editor);
+                  
                   // Apply custom theme
                   editor.updateOptions({
                     theme: localTheme === 'dark' ? 'draxity-dark' : 'draxity-light'
@@ -608,6 +663,29 @@ int main() {
                   // Track cursor position for line highlighting
                   editor.onDidChangeCursorPosition((e) => {
                     setCursorLine(e.position.lineNumber);
+                  });
+                  
+                  // Live syntax validation with smart triggers
+                  editor.onDidChangeModelContent((e) => {
+                    if (validationTimeout) clearTimeout(validationTimeout);
+                    
+                    // Get the last change
+                    const changes = e.changes;
+                    const lastChange = changes[changes.length - 1];
+                    const insertedText = lastChange?.text || '';
+                    
+                    // Immediate validation on specific characters
+                    const immediateChars = [';', ' ', '\n', '}', ')', ']'];
+                    const shouldValidateImmediately = immediateChars.some(char => insertedText.includes(char));
+                    
+                    if (shouldValidateImmediately) {
+                      // Quick validation for syntax-critical characters
+                      setTimeout(() => validateSyntax(editor), 300);
+                    } else {
+                      // Normal debounced validation for other characters
+                      const timeout = setTimeout(() => validateSyntax(editor), 800);
+                      setValidationTimeout(timeout);
+                    }
                   });
                   
                   // Set initial cursor position to line 4 (Hello World line)
