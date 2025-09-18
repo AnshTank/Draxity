@@ -30,17 +30,27 @@ async function executeCppCode(code: string, input?: string) {
     }
 
     // Compile C++ code
-    const compileCommand = `g++ -o "${exeFile}" "${cppFile}" -std=c++17 -O2`;
+    const compileCommand = `g++ -o "${exeFile}" "${cppFile}" -std=c++17 -O2 -mconsole`;
     const compileStart = Date.now();
     
+    let compileWarnings = '';
     try {
-      await execAsync(compileCommand, { timeout: 10000 });
+      const compileResult = await execAsync(compileCommand, { timeout: 10000 });
+      compileWarnings = compileResult.stderr || '';
+      console.log('Compile success, stderr:', compileWarnings);
     } catch (compileError: any) {
-      return {
-        success: false,
-        error: compileError.stderr || compileError.message,
-        type: 'compilation_error'
-      };
+      compileWarnings = compileError.stderr || '';
+      console.log('Compile error/warning, stderr:', compileWarnings);
+      console.log('Executable exists:', existsSync(exeFile));
+      // Check if executable was created (compilation succeeded with warnings)
+      if (!existsSync(exeFile)) {
+        // Real compilation error - no executable created
+        return {
+          success: false,
+          error: compileError.stderr || compileError.message,
+          type: 'compilation_error'
+        };
+      }
     }
 
     // Execute compiled program
@@ -58,9 +68,18 @@ async function executeCppCode(code: string, input?: string) {
       
       const executionTime = Date.now() - executeStart;
       
+      let fullOutput = '';
+      if (compileWarnings.trim()) {
+        fullOutput += compileWarnings.trim() + '\n';
+      }
+      if (stdout.trim()) {
+        fullOutput += stdout.trim() + '\n';
+      }
+      fullOutput += '\n=== Code Execution Successful ===';
+      
       return {
         success: true,
-        output: stdout,
+        output: fullOutput,
         error: stderr || null,
         executionTime: `${executionTime}ms`,
         memoryUsed: 'N/A'
@@ -92,50 +111,146 @@ async function executeCppCode(code: string, input?: string) {
 }
 
 function wrapCppCodeForTesting(userCode: string, testCases: any[]): string {
-  return `
-#include <iostream>
+  // Extract user's main function content
+  let userMainContent = '';
+  const mainMatch = userCode.match(/int\s+main\s*\([^)]*\)\s*\{([\s\S]*?)return\s+\d+;/)?.[1];
+  if (mainMatch) {
+    userMainContent = mainMatch.trim();
+  }
+  
+  // Remove existing main function from user code
+  let cleanUserCode = userCode;
+  
+  // Fix incomplete functions by adding default return statements
+  if (cleanUserCode.includes('twoSum') && !cleanUserCode.includes('return')) {
+    cleanUserCode = cleanUserCode.replace(
+      /(vector<int>\s+twoSum\s*\([^)]*\)\s*\{[\s\S]*?)\}/g,
+      '$1\n        return {};\n    }'
+    );
+  }
+  
+  // More robust main function removal
+  const mainFunctionRegex = /int\s+main\s*\([^)]*\)\s*\{[\s\S]*?\n\s*return\s+\d+;\s*\n\s*\}/g;
+  cleanUserCode = cleanUserCode.replace(mainFunctionRegex, '').trim();
+  
+  // Fallback: simple main function removal
+  if (cleanUserCode.includes('int main(')) {
+    const lines = cleanUserCode.split('\n');
+    const filteredLines = [];
+    let insideMain = false;
+    let braceCount = 0;
+    
+    for (const line of lines) {
+      if (line.trim().startsWith('int main(')) {
+        insideMain = true;
+        continue;
+      }
+      
+      if (insideMain) {
+        braceCount += (line.match(/\{/g) || []).length;
+        braceCount -= (line.match(/\}/g) || []).length;
+        
+        if (braceCount <= 0) {
+          insideMain = false;
+        }
+        continue;
+      }
+      
+      filteredLines.push(line);
+    }
+    
+    cleanUserCode = filteredLines.join('\n').trim();
+  }
+  
+  const hasExtraCase = testCases && testCases.length > 3;
+  
+  if (hasExtraCase) {
+    return `#include <iostream>
 #include <vector>
-#include <string>
-#include <sstream>
-#include <algorithm>
+#include <unordered_map>
 using namespace std;
 
-${userCode}
+${cleanUserCode}
 
 int main() {
-    vector<string> results;
+    ${userMainContent ? userMainContent + '\n' : ''}
+    Solution solution;
     
-    // Test Case 1: [2,7,11,15], target = 9
     vector<int> nums1 = {2, 7, 11, 15};
-    int target1 = 9;
-    vector<int> result1 = twoSum(nums1, target1);
-    vector<int> expected1 = {0, 1};
-    bool passed1 = (result1 == expected1);
+    vector<int> result1 = solution.twoSum(nums1, 9);
+    bool passed1 = (result1.size() == 2 && ((result1[0] == 0 && result1[1] == 1) || (result1[0] == 1 && result1[1] == 0)));
     
-    // Test Case 2: [3,2,4], target = 6
     vector<int> nums2 = {3, 2, 4};
-    int target2 = 6;
-    vector<int> result2 = twoSum(nums2, target2);
-    vector<int> expected2 = {1, 2};
-    bool passed2 = (result2 == expected2);
+    vector<int> result2 = solution.twoSum(nums2, 6);
+    bool passed2 = (result2.size() == 2 && ((result2[0] == 1 && result2[1] == 2) || (result2[0] == 2 && result2[1] == 1)));
     
-    // Test Case 3: [3,3], target = 6
     vector<int> nums3 = {3, 3};
-    int target3 = 6;
-    vector<int> result3 = twoSum(nums3, target3);
-    vector<int> expected3 = {0, 1};
-    bool passed3 = (result3 == expected3);
+    vector<int> result3 = solution.twoSum(nums3, 6);
+    bool passed3 = (result3.size() == 2 && ((result3[0] == 0 && result3[1] == 1) || (result3[0] == 1 && result3[1] == 0)));
     
-    // Output results in JSON format
-    cout << "[";
-    cout << "{\"case\":1,\"passed\":" << (passed1 ? "true" : "false") << ",\"actual\":[" << result1[0] << "," << result1[1] << "],\"expected\":[0,1]}"; 
-    cout << ",{\"case\":2,\"passed\":" << (passed2 ? "true" : "false") << ",\"actual\":[" << result2[0] << "," << result2[1] << "],\"expected\":[1,2]}";
-    cout << ",{\"case\":3,\"passed\":" << (passed3 ? "true" : "false") << ",\"actual\":[" << result3[0] << "," << result3[1] << "],\"expected\":[0,1]}";
-    cout << "]" << endl;
+    vector<int> nums4 = {1, 2, 3, 4, 5};
+    vector<int> result4 = solution.twoSum(nums4, 8);
+    bool passed4 = (result4.size() == 2 && ((result4[0] == 2 && result4[1] == 4) || (result4[0] == 4 && result4[1] == 2)));
+    
+    cout << "[{\\"case\\":\\"nums=[2,7,11,15], target=9\\",\\"passed\\":" << (passed1 ? "true" : "false") << ",\\"actual\\":[";
+    if (result1.size() >= 2) cout << result1[0] << "," << result1[1];
+    cout << "],\\"expected\\":[0,1]}";
+    
+    cout << ",{\\"case\\":\\"nums=[3,2,4], target=6\\",\\"passed\\":" << (passed2 ? "true" : "false") << ",\\"actual\\":[";
+    if (result2.size() >= 2) cout << result2[0] << "," << result2[1];
+    cout << "],\\"expected\\":[1,2]}";
+    
+    cout << ",{\\"case\\":\\"nums=[3,3], target=6\\",\\"passed\\":" << (passed3 ? "true" : "false") << ",\\"actual\\":[";
+    if (result3.size() >= 2) cout << result3[0] << "," << result3[1];
+    cout << "],\\"expected\\":[0,1]}";
+    
+    cout << ",{\\"case\\":\\"nums=[1,2,3,4,5], target=8\\",\\"passed\\":" << (passed4 ? "true" : "false") << ",\\"actual\\":[";
+    if (result4.size() >= 2) cout << result4[0] << "," << result4[1];
+    cout << "],\\"expected\\":[2,4]}]" << endl;
     
     return 0;
 }
 `;
+  } else {
+    return `#include <iostream>
+#include <vector>
+#include <unordered_map>
+using namespace std;
+
+${cleanUserCode}
+
+int main() {
+    ${userMainContent ? userMainContent + '\n' : ''}
+    Solution solution;
+    
+    vector<int> nums1 = {2, 7, 11, 15};
+    vector<int> result1 = solution.twoSum(nums1, 9);
+    bool passed1 = (result1.size() == 2 && ((result1[0] == 0 && result1[1] == 1) || (result1[0] == 1 && result1[1] == 0)));
+    
+    vector<int> nums2 = {3, 2, 4};
+    vector<int> result2 = solution.twoSum(nums2, 6);
+    bool passed2 = (result2.size() == 2 && ((result2[0] == 1 && result2[1] == 2) || (result2[0] == 2 && result2[1] == 1)));
+    
+    vector<int> nums3 = {3, 3};
+    vector<int> result3 = solution.twoSum(nums3, 6);
+    bool passed3 = (result3.size() == 2 && ((result3[0] == 0 && result3[1] == 1) || (result3[0] == 1 && result3[1] == 0)));
+    
+    cout << "[{\\"case\\":\\"nums=[2,7,11,15], target=9\\",\\"passed\\":" << (passed1 ? "true" : "false") << ",\\"actual\\":[";
+    if (result1.size() >= 2) cout << result1[0] << "," << result1[1];
+    cout << "],\\"expected\\":[0,1]}";
+    
+    cout << ",{\\"case\\":\\"nums=[3,2,4], target=6\\",\\"passed\\":" << (passed2 ? "true" : "false") << ",\\"actual\\":[";
+    if (result2.size() >= 2) cout << result2[0] << "," << result2[1];
+    cout << "],\\"expected\\":[1,2]}";
+    
+    cout << ",{\\"case\\":\\"nums=[3,3], target=6\\",\\"passed\\":" << (passed3 ? "true" : "false") << ",\\"actual\\":[";
+    if (result3.size() >= 2) cout << result3[0] << "," << result3[1];
+    cout << "],\\"expected\\":[0,1]}]" << endl;
+    
+    return 0;
+}
+`;
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -182,14 +297,36 @@ export async function POST(request: NextRequest) {
       
       if (result.success && result.output) {
         try {
-          const testResults = JSON.parse(result.output.trim());
-          return NextResponse.json({ 
-            testResults, 
-            executionTime: result.executionTime 
-          });
+          const lines = result.output.trim().split('\n');
+          // Find the JSON line (should be before the success message)
+          let testResultsLine = '';
+          let consoleLines = [];
+          
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.startsWith('[{') && line.includes('"case"')) {
+              testResultsLine = line;
+            } else if (!line.includes('=== Code Execution Successful ===')) {
+              consoleLines.push(line);
+            }
+          }
+          
+          if (testResultsLine) {
+            const testResults = JSON.parse(testResultsLine);
+            return NextResponse.json({ 
+              testResults, 
+              executionTime: result.executionTime,
+              consoleOutput: consoleLines.join('\n') || null
+            });
+          } else {
+            return NextResponse.json({ 
+              error: 'No test results found in output',
+              rawOutput: result.output
+            });
+          }
         } catch (parseError) {
           return NextResponse.json({ 
-            error: 'Failed to parse test results',
+            error: 'Failed to parse test results: ' + parseError.message,
             rawOutput: result.output
           });
         }

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { getProblemById } from "@/lib/assessment-problems";
+import Editor from '@monaco-editor/react';
 
 // Simple icon components
 const PlayIcon = () => (
@@ -294,7 +296,9 @@ const ConsolePanel = ({
   return (
     <div
       className={`p-4 rounded border ${
-        theme === "dark" ? "bg-gray-800 border-gray-600" : "bg-white border-gray-300"
+        theme === "dark"
+          ? "bg-gray-800 border-gray-600"
+          : "bg-white border-gray-300"
       }`}
     >
       {error ? (
@@ -458,7 +462,7 @@ const TestCasesPanel = ({
           <textarea
             value={activeCase.input}
             onChange={(e) => updateTestCase(activeCase.id, e.target.value)}
-            placeholder="nums = [2,7,11,15]\ntarget = 9"
+            placeholder="nums = [2,7,11,15]\ntarget = 9\nexpected = [0,1]"
             rows={3}
             className={`w-full px-3 py-2 text-sm font-mono rounded border focus:outline-none focus:ring-1 focus:ring-orange-500 resize-none ${
               theme === "dark"
@@ -555,7 +559,6 @@ const ResultsPanel = ({
                 theme === "dark" ? "text-white" : "text-gray-900"
               }`}
             >
-              Test Case {activeResultCase} -{" "}
               {activeResult.passed ? "Passed" : "Failed"}
             </span>
           </div>
@@ -661,9 +664,15 @@ const languages = [
   },
 ];
 
-export function EnhancedCompiler() {
-  const [selectedLanguage, setSelectedLanguage] = useState("python");
-  const [code, setCode] = useState(languages[3].template);
+interface EnhancedCompilerProps {
+  problemId?: string | null;
+}
+
+export function EnhancedCompiler({
+  problemId = null,
+}: EnhancedCompilerProps = {}) {
+  const [selectedLanguage, setSelectedLanguage] = useState("cpp");
+  const [code, setCode] = useState(languages[1].template);
   const [isRunning, setIsRunning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [testResults, setTestResults] = useState<
@@ -672,6 +681,7 @@ export function EnhancedCompiler() {
   const [leftPanelWidth, setLeftPanelWidth] = useState(50);
   const [testResultsHeight, setTestResultsHeight] = useState(30);
   const [isTestResultsCollapsed, setIsTestResultsCollapsed] = useState(true);
+
   const [cursorLine, setCursorLine] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
   const [notes, setNotes] = useState("");
@@ -681,43 +691,96 @@ export function EnhancedCompiler() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeConsoleTab, setActiveConsoleTab] = useState("testcases");
   const [testCases, setTestCases] = useState([
-    { id: 1, input: "nums = [2,7,11,15]\ntarget = 9" },
-    { id: 2, input: "nums = [3,2,4]\ntarget = 6" },
-    { id: 3, input: "nums = [3,3]\ntarget = 6" },
+    { id: 1, input: "nums = [2,7,11,15]\ntarget = 9\nexpected = [0,1]" },
+    { id: 2, input: "nums = [3,2,4]\ntarget = 6\nexpected = [1,2]" },
+    { id: 3, input: "nums = [3,3]\ntarget = 6\nexpected = [0,1]" },
   ]);
   const [consoleOutput, setConsoleOutput] = useState("");
   const [activeTestCase, setActiveTestCase] = useState(1);
   const [activeResultCase, setActiveResultCase] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
   const [showTimeOverModal, setShowTimeOverModal] = useState(false);
+  const [currentProblem, setCurrentProblem] = useState<any>(null);
+  const [editorInstance, setEditorInstance] = useState<any>(null);
+  const [submissions, setSubmissions] = useState<Array<{id: number, code: string, timestamp: string, status: string, language: string, runtime: string, memory: string, notes: string}>>([]);
+  const [expandedSubmission, setExpandedSubmission] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (problemId) {
+      const problem = getProblemById(problemId);
+      setCurrentProblem(problem);
+      if (problem && problem.id === "two-sum") {
+        setCode(`#include <iostream>
+#include <vector>
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        // Write your solution here
+        return {};
+    }
+};
+
+int main() {
+    cout << "Hello, World!" << endl;
+    return 0;
+}`);
+        setSelectedLanguage("cpp");
+      }
+    } else {
+      // Default to Two Sum problem if no problemId
+      const twoSumProblem = getProblemById("two-sum");
+      setCurrentProblem(twoSumProblem);
+      setCode(`#include <iostream>
+#include <vector>
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        // Write your solution here
+        return {};
+    }
+};
+
+int main() {
+    cout << "Hello, World!" << endl;
+    return 0;
+}`);
+      setSelectedLanguage("cpp");
+    }
+  }, [problemId]);
 
   useEffect(() => {
     setMounted(true);
-    const lines = languages[3].template.split("\n");
-    setCursorLine(lines.length);
-    
+
     // Restore paused assessment state if exists
-    const savedState = localStorage.getItem('pausedAssessment');
+    const savedState = localStorage.getItem("pausedAssessment");
     if (savedState) {
       try {
         const assessmentState = JSON.parse(savedState);
         setTimeLeft(assessmentState.timeLeft || 3600);
         setCode(assessmentState.code || languages[3].template);
-        setSelectedLanguage(assessmentState.selectedLanguage || "python");
-        setTestCases(assessmentState.testCases || [
-          { id: 1, input: "nums = [2,7,11,15]\ntarget = 9" },
-          { id: 2, input: "nums = [3,2,4]\ntarget = 6" },
-          { id: 3, input: "nums = [3,3]\ntarget = 6" },
-        ]);
+        setSelectedLanguage(assessmentState.selectedLanguage || "cpp");
+        setTestCases(
+          assessmentState.testCases || [
+            { id: 1, input: "nums = [2,7,11,15]\ntarget = 9" },
+            { id: 2, input: "nums = [3,2,4]\ntarget = 6" },
+            { id: 3, input: "nums = [3,3]\ntarget = 6" },
+          ]
+        );
         setActiveTestCase(assessmentState.activeTestCase || 1);
         setActiveTab(assessmentState.activeTab || "description");
         setNotes(assessmentState.notes || "");
         setTestResults(assessmentState.testResults || []);
         setIsPaused(false); // Resume the assessment
         // Clear the saved state after restoration
-        localStorage.removeItem('pausedAssessment');
+        localStorage.removeItem("pausedAssessment");
       } catch (error) {
-        console.error('Failed to restore assessment state:', error);
+        console.error("Failed to restore assessment state:", error);
       }
     }
   }, []);
@@ -747,14 +810,22 @@ export function EnhancedCompiler() {
   };
 
   const handleBackToHome = () => {
-    if (window.confirm("Are you sure you want to leave? Your progress will be lost.")) {
+    if (
+      window.confirm(
+        "Are you sure you want to leave? Your progress will be lost."
+      )
+    ) {
       window.location.href = "/";
     }
   };
 
   const handlePauseTest = () => {
     if (!isPaused) {
-      if (window.confirm("Do you want to pause the test? You will be redirected to the module page.")) {
+      if (
+        window.confirm(
+          "Do you want to pause the test? You will be redirected to the module page."
+        )
+      ) {
         setIsPaused(true);
         // Save current state to localStorage
         const assessmentState = {
@@ -766,10 +837,13 @@ export function EnhancedCompiler() {
           activeTab,
           notes,
           testResults,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
-        localStorage.setItem('pausedAssessment', JSON.stringify(assessmentState));
-        
+        localStorage.setItem(
+          "pausedAssessment",
+          JSON.stringify(assessmentState)
+        );
+
         // Navigate to module page when paused
         setTimeout(() => {
           window.location.href = "/courses/dsa-fundamentals/modules/1";
@@ -783,15 +857,18 @@ export function EnhancedCompiler() {
   const handleRetakeAssessment = () => {
     setTimeLeft(3600);
     setShowTimeOverModal(false);
-    setCode(languages.find(l => l.id === selectedLanguage)?.template || languages[3].template);
+    setCode(
+      languages.find((l) => l.id === selectedLanguage)?.template ||
+        languages[3].template
+    );
     setTestResults([]);
     setConsoleOutput("");
-    localStorage.removeItem('pausedAssessment');
+    localStorage.removeItem("pausedAssessment");
   };
 
   const handleReviewConcepts = () => {
     setTimeLeft(3600);
-    localStorage.removeItem('pausedAssessment');
+    localStorage.removeItem("pausedAssessment");
     window.location.href = "/courses/dsa-fundamentals/modules/1";
   };
 
@@ -809,41 +886,177 @@ export function EnhancedCompiler() {
     const lang = languages.find((l) => l.id === langId);
     if (lang) {
       setSelectedLanguage(langId);
-      setCode(lang.template);
+
+      let template = lang.template;
+      if (langId === "cpp") {
+        template = `#include <iostream>
+#include <vector>
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        // Write your solution here
+        return {};
+    }
+};
+
+int main() {
+    cout << "Hello, World!" << endl;
+    return 0;
+}`;;
+      }
+
+      setCode(template);
       setTestResults([]);
-      const lines = lang.template.split("\n");
-      setCursorLine(lines.length);
+
+      if (editorInstance) {
+        const monaco = (window as any).monaco;
+        if (monaco) {
+          monaco.editor.setModelLanguage(editorInstance.getModel(), langId);
+        }
+        editorInstance.setValue(template);
+        const codeLines = template.split('\n');
+        editorInstance.setPosition({ lineNumber: codeLines.length, column: 1 });
+      }
     }
   };
 
-  const handleRun = () => {
+  const handleRun = async () => {
     setIsRunning(true);
-    setConsoleOutput(
-      "Compiling and running Python...\n\nHello, World!\n\nProcess finished with exit code 0\nExecution time: 0.15s\nMemory used: 1.2 MB"
-    );
-    setTimeout(() => {
-      const results = testCases.map((testCase) => {
-        const expected = "[0,1]";
-        const actual = Math.random() > 0.5 ? "[0,1]" : "[1,2]";
-        return {
-          case: testCase.input,
-          passed: expected === actual,
-          expected: expected,
-          actual: actual,
-        };
+    setConsoleOutput("Compiling and running C++...\n");
+    setIsTestResultsCollapsed(false);
+    setActiveConsoleTab("console");
+
+    try {
+      const response = await fetch("/api/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "practice",
+          language: "cpp",
+          code: code,
+          input: ""
+        }),
       });
-      setTestResults(results);
-      setIsRunning(false);
-      setIsTestResultsCollapsed(false);
-      setActiveConsoleTab("results");
-    }, 2000);
+
+      const result = await response.json();
+
+      if (response.ok) {
+        if (result.error) {
+          setConsoleOutput(`❌ Compilation/Runtime Error:\n${result.error}`);
+        } else {
+          setConsoleOutput(`✅ Code executed successfully!\n\nOutput:\n${result.output || '(no output)'}\n\nExecution time: ${result.executionTime || 'N/A'}\nMemory used: ${result.memoryUsed || 'N/A'}`);
+        }
+      } else {
+        setConsoleOutput(`❌ Error: ${result.error || 'Unknown error occurred'}`);
+      }
+    } catch (error) {
+      setConsoleOutput(`🌐 Network Error: ${error instanceof Error ? error.message : 'Failed to connect to compiler'}`);
+    }
+
+    setIsRunning(false);
+  };
+
+  const handleRunTests = async () => {
+    setIsRunning(true);
+    setConsoleOutput("Compiling and running test cases...\n");
+    setIsTestResultsCollapsed(false);
+    setActiveConsoleTab("console");
+
+    try {
+      const response = await fetch("/api/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "assessment",
+          language: "cpp",
+          code: code,
+          testCases: testCases,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || result.error) {
+        setConsoleOutput(`❌ Compilation/Test execution failed:\n${result.error || result.message || 'Unknown error'}`);
+        setTestResults([]);
+        setActiveConsoleTab("console");
+      } else if (result.testResults && Array.isArray(result.testResults)) {
+        const formattedResults = result.testResults.map((tr: any) => ({
+          case: tr.case,
+          passed: tr.passed,
+          expected: tr.expected,
+          actual: tr.actual,
+        }));
+        setTestResults(formattedResults);
+        
+        const passedCount = formattedResults.filter(r => r.passed).length;
+        const totalCount = formattedResults.length;
+        
+        const userOutput = result.consoleOutput ? `\nProgram Output:\n${result.consoleOutput}\n` : '';
+        
+        setConsoleOutput(
+          `✅ Code compiled and executed successfully!${userOutput}\n` +
+          `📊 Test Results: ${passedCount}/${totalCount} passed\n` +
+          `⚡ Execution time: ${result.executionTime || 'N/A'}\n` +
+          `💾 Memory usage: N/A\n\n` +
+          `${passedCount === totalCount ? '🎉 All test cases passed!' : '⚠️ Some test cases failed. Check Results tab for details.'}`
+        );
+        
+        // Show results tab if there are test results, but keep console output visible
+        setActiveConsoleTab("console");
+      } else {
+        setConsoleOutput("❌ Test execution completed but no results received");
+        setTestResults([]);
+      }
+    } catch (error) {
+      setConsoleOutput(`🌐 Network error: ${error instanceof Error ? error.message : 'Failed to connect to compiler'}`);
+      setTestResults([]);
+    }
+
+    setIsRunning(false);
   };
 
   const handleSubmit = () => {
+    // Check if all test cases pass
+    const passedTests = testResults.filter((t) => t.passed).length;
+    const totalTests = testResults.length;
+    
+    if (totalTests === 0) {
+      alert("⚠️ Please run test cases first before submitting!");
+      return;
+    }
+    
+    if (passedTests !== totalTests) {
+      alert(`❌ ${passedTests}/${totalTests} test cases passed. All test cases must pass to submit!`);
+      return;
+    }
+    
     setIsSubmitting(true);
+    
     setTimeout(() => {
-      console.log("Solution submitted successfully!");
+      // Add submission to history
+      const newSubmission = {
+        id: submissions.length + 1,
+        code: code,
+        timestamp: new Date().toLocaleString(),
+        status: "Accepted",
+        language: "C++",
+        runtime: "12 ms",
+        memory: "8.2 MB",
+        notes: notes.trim()
+      };
+      setSubmissions([...submissions, newSubmission]);
+      
       setIsSubmitting(false);
+      
+      // Show success alert
+      alert("🎉 You did great! Just checkout the optimal solution from solution tab.");
+      
+      // Switch to solution tab
+      setActiveTab("solution");
     }, 1500);
   };
 
@@ -852,8 +1065,6 @@ export function EnhancedCompiler() {
     if (lang) {
       setCode(lang.template);
       setTestResults([]);
-      const lines = lang.template.split("\n");
-      setCursorLine(lines.length);
     }
   };
 
@@ -987,9 +1198,7 @@ export function EnhancedCompiler() {
             }`}
           >
             {isPaused ? <PlayIcon /> : <PauseIcon />}
-            <span className="font-medium">
-              {isPaused ? "Resume" : "Pause"}
-            </span>
+            <span className="font-medium">{isPaused ? "Resume" : "Pause"}</span>
           </button>
 
           {/* Fullscreen Toggle */}
@@ -1032,7 +1241,7 @@ export function EnhancedCompiler() {
                   theme === "dark" ? "text-white" : "text-gray-900"
                 }`}
               >
-                1. Two Sum
+                {currentProblem ? currentProblem.title : "1. Two Sum"}
               </h1>
               <Badge
                 className={`text-xs px-3 py-1 rounded-full font-medium shadow-sm ${
@@ -1041,7 +1250,7 @@ export function EnhancedCompiler() {
                     : "bg-gradient-to-r from-green-500 to-emerald-500 text-white"
                 }`}
               >
-                Easy
+                {currentProblem ? currentProblem.difficulty : "Easy"}
               </Badge>
             </div>
           </div>
@@ -1117,95 +1326,360 @@ export function EnhancedCompiler() {
 
           <div className="flex-1 overflow-auto">
             {activeTab === "description" && (
-              <div className="p-6">
-                <div
-                  className={`space-y-4 text-sm ${
-                    theme === "dark" ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
-                  <p>
-                    Given an array of integers{" "}
-                    <code
-                      className={`px-1.5 py-0.5 rounded ${
-                        theme === "dark"
-                          ? "bg-gray-700 text-orange-400"
-                          : "bg-gray-100 text-orange-600"
-                      }`}
-                    >
-                      nums
-                    </code>{" "}
-                    and an integer{" "}
-                    <code
-                      className={`px-1.5 py-0.5 rounded ${
-                        theme === "dark"
-                          ? "bg-gray-700 text-orange-400"
-                          : "bg-gray-100 text-orange-600"
-                      }`}
-                    >
-                      target
-                    </code>
-                    , return indices of the two numbers such that they add up to
-                    target.
-                  </p>
-                </div>
+              <div
+                className="p-6"
+                style={{
+                  fontSize: "18px",
+                  fontFamily:
+                    'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                }}
+              >
+                {currentProblem ? (
+                  <div
+                    className={`space-y-8 ${
+                      theme === "dark" ? "text-gray-200" : "text-gray-800"
+                    }`}
+                    style={{
+                      fontSize: "18px",
+                      fontFamily:
+                        'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    }}
+                  >
+                    <div>
+                      <h3
+                        className={`font-bold mb-4 text-xl ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        Description
+                      </h3>
+                      <div className="whitespace-pre-wrap leading-relaxed text-lg">
+                        {currentProblem.description}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3
+                        className={`font-bold mb-4 text-xl ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        Input Format
+                      </h3>
+                      <div
+                        className={`p-4 rounded-lg text-base ${
+                          theme === "dark"
+                            ? "bg-blue-900/20 border border-blue-700/50 text-blue-200"
+                            : "bg-blue-50 border border-blue-200 text-blue-800"
+                        }`}
+                      >
+                        {currentProblem.inputFormat}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3
+                        className={`font-bold mb-4 text-xl ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        Output Format
+                      </h3>
+                      <div
+                        className={`p-4 rounded-lg text-base ${
+                          theme === "dark"
+                            ? "bg-green-900/20 border border-green-700/50 text-green-200"
+                            : "bg-green-50 border border-green-200 text-green-800"
+                        }`}
+                      >
+                        {currentProblem.outputFormat}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3
+                        className={`font-bold mb-4 text-xl ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        Examples
+                      </h3>
+                      {currentProblem.examples.map(
+                        (example: any, idx: number) => (
+                          <div key={idx} className="mb-6">
+                            <p className="font-semibold mb-3 text-lg">
+                              Example {idx + 1}:
+                            </p>
+                            <div
+                              className={`p-4 rounded-lg font-mono text-base ${
+                                theme === "dark"
+                                  ? "bg-gray-800 border border-gray-700"
+                                  : "bg-gray-50 border border-gray-200"
+                              }`}
+                            >
+                              <div className="mb-2">
+                                <strong>Input:</strong>{" "}
+                                {example.input.replace(/\\n/g, "\n")}
+                              </div>
+                              <div>
+                                <strong>Output:</strong> {example.output}
+                              </div>
+                            </div>
+                            <p className="text-base mt-3 text-gray-500">
+                              <strong>Explanation:</strong>{" "}
+                              {example.explanation}
+                            </p>
+                          </div>
+                        )
+                      )}
+                    </div>
+
+                    <div>
+                      <h3
+                        className={`font-bold mb-4 text-xl ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        Constraints
+                      </h3>
+                      <ul className="list-disc list-inside space-y-2">
+                        {currentProblem.constraints.map(
+                          (constraint: string, idx: number) => (
+                            <li key={idx} className="text-base">
+                              {constraint}
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h3
+                        className={`font-bold mb-4 text-xl ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        Complexity Requirements
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div
+                          className={`p-4 rounded-lg ${
+                            theme === "dark"
+                              ? "bg-purple-900/20 border border-purple-700/50"
+                              : "bg-purple-50 border border-purple-200"
+                          }`}
+                        >
+                          <div
+                            className={`font-semibold mb-2 ${
+                              theme === "dark"
+                                ? "text-purple-300"
+                                : "text-purple-700"
+                            }`}
+                          >
+                            Time Complexity
+                          </div>
+                          <div
+                            className={`text-lg font-mono ${
+                              theme === "dark"
+                                ? "text-purple-200"
+                                : "text-purple-800"
+                            }`}
+                          >
+                            {currentProblem.timeComplexity}
+                          </div>
+                        </div>
+                        <div
+                          className={`p-4 rounded-lg ${
+                            theme === "dark"
+                              ? "bg-orange-900/20 border border-orange-700/50"
+                              : "bg-orange-50 border border-orange-200"
+                          }`}
+                        >
+                          <div
+                            className={`font-semibold mb-2 ${
+                              theme === "dark"
+                                ? "text-orange-300"
+                                : "text-orange-700"
+                            }`}
+                          >
+                            Space Complexity
+                          </div>
+                          <div
+                            className={`text-lg font-mono ${
+                              theme === "dark"
+                                ? "text-orange-200"
+                                : "text-orange-800"
+                            }`}
+                          >
+                            {currentProblem.spaceComplexity}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3
+                        className={`font-bold mb-4 text-xl ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        Hints
+                      </h3>
+                      <div className="space-y-3">
+                        {currentProblem.hints.map(
+                          (hint: string, idx: number) => (
+                            <div
+                              key={idx}
+                              className={`p-4 rounded-lg border-l-4 ${
+                                theme === "dark"
+                                  ? "bg-yellow-900/20 border-l-yellow-500 text-yellow-200"
+                                  : "bg-yellow-50 border-l-yellow-500 text-yellow-800"
+                              }`}
+                            >
+                              <div className="flex items-start space-x-3">
+                                <span
+                                  className={`font-semibold text-sm px-2 py-1 rounded ${
+                                    theme === "dark"
+                                      ? "bg-yellow-700 text-yellow-100"
+                                      : "bg-yellow-200 text-yellow-800"
+                                  }`}
+                                >
+                                  Hint {idx + 1}
+                                </span>
+                                <p className="text-base flex-1">{hint}</p>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3
+                        className={`font-bold mb-4 text-xl ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        Topics
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {(
+                          currentProblem.topics || [
+                            "Array",
+                            "Hash Table",
+                            "Two Pointers",
+                          ]
+                        ).map((topic: string, idx: number) => (
+                          <span
+                            key={idx}
+                            className={`px-3 py-2 rounded-lg font-medium ${
+                              theme === "dark"
+                                ? "bg-blue-900/30 text-blue-300 border border-blue-700/50"
+                                : "bg-blue-100 text-blue-700 border border-blue-300"
+                            }`}
+                            style={{ fontSize: "18px" }}
+                          >
+                            {topic}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className={`text-center py-8 ${
+                      theme === "dark" ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  >
+                    <p>No problem selected</p>
+                  </div>
+                )}
               </div>
             )}
 
             {activeTab === "solution" && (
               <div className="p-6">
-                <h3
-                  className={`text-lg font-semibold mb-4 ${
-                    theme === "dark" ? "text-white" : "text-gray-900"
-                  }`}
-                >
-                  Solution Approach
-                </h3>
-                <div
-                  className={`space-y-4 text-sm ${
-                    theme === "dark" ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
-                  <div
-                    className={`p-4 rounded-lg border ${
-                      theme === "dark"
-                        ? "bg-gray-750 border-gray-600"
-                        : "bg-gray-50 border-gray-200"
-                    }`}
-                  >
-                    <h4
-                      className={`font-medium mb-2 ${
-                        theme === "dark" ? "text-white" : "text-gray-900"
-                      }`}
-                    >
-                      Hash Map Approach
-                    </h4>
-                    <p className="mb-3">
-                      Use a hash map to store the complement of each number as
-                      we iterate through the array.
-                    </p>
+                {submissions.length > 0 ? (
+                  <div className={`space-y-8 ${theme === "dark" ? "text-gray-200" : "text-gray-800"}`}>
+                    <div>
+                      <h3 className={`font-bold mb-4 text-xl ${theme === "dark" ? "text-white" : "text-gray-900"}`}>Optimal Solution</h3>
+                      
+                      <div className={`p-4 rounded-lg border mb-6 ${theme === "dark" ? "bg-gradient-to-r from-orange-900/20 to-red-900/20 border-orange-700/50" : "bg-gradient-to-r from-orange-50 to-red-50 border-orange-200"}`}>
+                        <div className="flex justify-between items-center mb-3">
+                          <span className={`font-medium text-lg ${theme === "dark" ? "text-white" : "text-gray-900"}`}>Hash Map Approach - O(n) Solution</span>
+                          <Badge className="bg-orange-100 text-orange-700">Optimal</Badge>
+                        </div>
+                        <pre className={`text-sm font-mono p-4 rounded overflow-x-auto mb-3 ${theme === "dark" ? "bg-gray-900 text-gray-300" : "bg-white text-gray-700"}`}>{`#include <vector>
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map<int, int> pairIdx;
+        
+        for (int i = 0; i < nums.size(); ++i) {
+            int num = nums[i];
+            if (pairIdx.find(target - num) != pairIdx.end()) {
+                return {i, pairIdx[target - num]};
+            }
+            pairIdx[num] = i;
+        }
+        
+        return {};
+    }
+};`}</pre>
+                        <p className={`text-base ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>⏱️ Time: O(n) | 💾 Space: O(n) | Single pass with hash map lookup</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className={`text-center py-8 ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+                    <p>Complete the assessment to unlock the solution</p>
+                  </div>
+                )}
               </div>
             )}
 
             {activeTab === "submissions" && (
               <div className="p-6">
-                <h3
-                  className={`text-lg font-semibold mb-4 ${
-                    theme === "dark" ? "text-white" : "text-gray-900"
-                  }`}
-                >
-                  Submissions
-                </h3>
-                <div
-                  className={`text-center py-8 ${
-                    theme === "dark" ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  <p className="text-sm">
-                    No submissions yet. Submit your solution to see history.
-                  </p>
-                </div>
+                <h3 className={`text-lg font-semibold mb-4 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>Submissions</h3>
+                
+                {submissions.length > 0 ? (
+                  <div className="space-y-4">
+                    {submissions.map((submission) => (
+                      <div key={submission.id} className={`rounded-lg border mb-3 overflow-hidden ${theme === "dark" ? "bg-gray-800 border-gray-600" : "bg-gray-50 border-gray-200"}`}>
+                        <div className={`p-4 cursor-pointer hover:bg-opacity-80 transition-colors ${theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100"}`} onClick={() => setExpandedSubmission(expandedSubmission === submission.id ? null : submission.id)}>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center space-x-4">
+                              <Badge className="bg-green-100 text-green-700">{submission.status}</Badge>
+                              <span className={`font-medium ${theme === "dark" ? "text-white" : "text-gray-900"}`}>{submission.language}</span>
+                              <span className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>Runtime: {submission.runtime}</span>
+                              <span className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>Memory: {submission.memory}</span>
+                              {submission.notes && (
+                                <button onClick={(e) => { e.stopPropagation(); alert(submission.notes); }} className={`text-xs px-2 py-1 rounded border ${theme === "dark" ? "border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white" : "border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white"}`}>
+                                  Notes
+                                </button>
+                              )}
+                            </div>
+                            <span className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>{submission.timestamp}</span>
+                          </div>
+                        </div>
+                        
+                        {expandedSubmission === submission.id && (
+                          <div className={`border-t p-4 ${theme === "dark" ? "border-gray-600 bg-gray-900" : "border-gray-200 bg-white"}`}>
+                            <h5 className={`font-medium mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>Submission #{submission.id} Code:</h5>
+                            <pre className={`text-xs font-mono p-3 rounded overflow-x-auto ${theme === "dark" ? "bg-gray-800 text-gray-300" : "bg-gray-50 text-gray-700"}`}>{submission.code}</pre>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={`text-center py-8 ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+                    <p className="text-sm">No submissions yet. Submit your solution to see history.</p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1292,7 +1766,16 @@ export function EnhancedCompiler() {
                     ? "hover:bg-gray-700 text-gray-300"
                     : "hover:bg-gray-100 text-gray-600"
                 }`}
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                onClick={() => {
+                  const newTheme = theme === "dark" ? "light" : "dark";
+                  setTheme(newTheme);
+                  if (editorInstance) {
+                    editorInstance.updateOptions({
+                      theme:
+                        newTheme === "dark" ? "draxity-dark" : "draxity-light",
+                    });
+                  }
+                }}
               >
                 {mounted && (theme === "dark" ? <SunIcon /> : <MoonIcon />)}
               </button>
@@ -1314,8 +1797,20 @@ export function EnhancedCompiler() {
                 <span>{isRunning ? "Running..." : "Run"}</span>
               </button>
               <button
+                onClick={handleRunTests}
+                disabled={isRunning}
+                className={`px-4 py-2 border text-sm font-medium rounded-lg flex items-center space-x-2 disabled:opacity-50 transition-colors cursor-pointer ${
+                  theme === "dark"
+                    ? "border-orange-600 text-orange-400 hover:bg-orange-600 hover:text-white"
+                    : "border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white"
+                }`}
+              >
+                <CheckCircleIcon />
+<span>{isRunning ? "Testing..." : "Test Cases"}</span>
+              </button>
+              <button
                 onClick={handleSubmit}
-                disabled={isSubmitting}
+                disabled={isSubmitting || (testResults.length > 0 && testResults.filter(t => t.passed).length !== testResults.length)}
                 className={`px-4 py-2 border text-sm font-medium rounded-lg flex items-center space-x-2 disabled:opacity-50 transition-colors cursor-pointer ${
                   theme === "dark"
                     ? "border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white"
@@ -1339,17 +1834,18 @@ export function EnhancedCompiler() {
           >
             {/* Line Numbers */}
             <div
-              className={`w-16 border-r flex flex-col font-mono select-none ${
+              className={`w-16 flex flex-col font-mono select-none ${
                 theme === "dark"
-                  ? "bg-gray-850 border-gray-600 text-gray-500"
-                  : "bg-gray-50 border-gray-200 text-gray-400"
+                  ? "bg-gray-900 text-gray-500"
+                  : "bg-gray-50 text-gray-400"
               }`}
+              style={{ paddingTop: "16px", paddingLeft: "8px", paddingRight: "8px" }}
             >
-              <div className="flex-1 overflow-y-auto pt-4 pb-4">
+              <div className="flex-1 overflow-hidden">
                 {codeLines.map((_, index) => (
                   <div
                     key={index}
-                    className={`flex items-center justify-end px-3 text-sm leading-6 ${
+                    className={`flex items-center justify-end px-3 text-sm ${
                       index + 1 === cursorLine
                         ? theme === "dark"
                           ? "bg-gray-700 text-orange-400 font-semibold"
@@ -1358,7 +1854,11 @@ export function EnhancedCompiler() {
                         ? "hover:bg-gray-800"
                         : "hover:bg-gray-100"
                     }`}
-                    style={{ minHeight: "1.5rem" }}
+                    style={{
+                      height: "22px",
+                      lineHeight: "22px",
+                      fontSize: "18px",
+                    }}
                   >
                     {index + 1}
                   </div>
@@ -1366,30 +1866,78 @@ export function EnhancedCompiler() {
               </div>
             </div>
 
-            {/* Code Textarea */}
-            <div className="flex-1 relative">
-              <textarea
+            {/* Monaco Editor */}
+            <div className="flex-1">
+              <Editor
+                height="100%"
+                language="cpp"
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
-                onSelect={(e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  const cursorPos = target.selectionStart;
-                  const textBeforeCursor = code.substring(0, cursorPos);
-                  const lineNumber = textBeforeCursor.split("\n").length;
-                  setCursorLine(lineNumber);
-                }}
-                className={`w-full h-full px-4 py-4 font-mono text-sm resize-none focus:outline-none border-0 leading-6 ${
-                  theme === "dark"
-                    ? "bg-gray-900 text-white"
-                    : "bg-white text-gray-900"
-                }`}
-                style={{
-                  fontFamily:
-                    'JetBrains Mono, Consolas, Monaco, "Courier New", monospace',
+                onChange={(value) => setCode(value || '')}
+                theme={theme === 'dark' ? 'draxity-dark' : 'draxity-light'}
+                options={{
+                  fontSize: 18,
+                  lineHeight: 22,
+                  fontFamily: 'JetBrains Mono, Consolas, Monaco, "Courier New", monospace',
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
                   tabSize: 4,
+                  insertSpaces: true,
+                  wordWrap: 'off',
+                  lineNumbers: 'off',
+                  glyphMargin: false,
+                  folding: false,
+                  lineDecorationsWidth: 0,
+                  renderLineHighlight: 'line',
+                  selectOnLineNumbers: false,
+                  roundedSelection: false,
+                  readOnly: false,
+                  cursorStyle: 'line',
+                  padding: { top: 16, bottom: 0, left: 0, right: 0 },
+                  contextmenu: true,
+                  mouseWheelZoom: false,
+                  quickSuggestions: true,
+                  acceptSuggestionOnCommitCharacter: true,
+                  acceptSuggestionOnEnter: 'on',
+                  accessibilitySupport: 'auto'
                 }}
-                spellCheck={false}
-                placeholder="Write your solution here..."
+                onMount={(editor, monaco) => {
+                  setEditorInstance(editor);
+                  
+                  // Make monaco globally accessible
+                  (window as any).monaco = monaco;
+                  
+                  // Define custom themes to match line numbers background
+                  monaco.editor.defineTheme("draxity-dark", {
+                    base: "vs-dark",
+                    inherit: true,
+                    rules: [],
+                    colors: {
+                      "editor.background": "#111827", // bg-gray-900 to match line numbers
+                      "editor.foreground": "#ffffff",
+                    },
+                  });
+
+                  monaco.editor.defineTheme("draxity-light", {
+                    base: "vs",
+                    inherit: true,
+                    rules: [],
+                    colors: {
+                      "editor.background": "#f9fafb", // bg-gray-50 to match line numbers
+                      "editor.foreground": "#1f2937",
+                    },
+                  });
+                  
+                  // Apply the custom theme immediately
+                  monaco.editor.setTheme(theme === "dark" ? "draxity-dark" : "draxity-light");
+                  
+                  editor.onDidChangeCursorPosition((e) => {
+                    setCursorLine(e.position.lineNumber);
+                  });
+                  
+                  // Focus editor immediately
+                  editor.focus();
+                }}
               />
             </div>
           </div>
@@ -1551,20 +2099,36 @@ export function EnhancedCompiler() {
       {/* Time Over Modal */}
       {showTimeOverModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className={`rounded-lg p-6 max-w-md w-full mx-4 ${
-            theme === "dark" ? "bg-gray-800 border border-gray-600" : "bg-white border border-gray-200"
-          }`}>
+          <div
+            className={`rounded-lg p-6 max-w-md w-full mx-4 ${
+              theme === "dark"
+                ? "bg-gray-800 border border-gray-600"
+                : "bg-white border border-gray-200"
+            }`}
+          >
             <div className="text-center">
-              <div className={`text-6xl mb-4 ${
-                theme === "dark" ? "text-red-400" : "text-red-500"
-              }`}>⏰</div>
-              <h2 className={`text-2xl font-bold mb-2 ${
-                theme === "dark" ? "text-white" : "text-gray-900"
-              }`}>Time's Up!</h2>
-              <p className={`mb-6 ${
-                theme === "dark" ? "text-gray-300" : "text-gray-600"
-              }`}>Your assessment time has ended. What would you like to do?</p>
-              
+              <div
+                className={`text-6xl mb-4 ${
+                  theme === "dark" ? "text-red-400" : "text-red-500"
+                }`}
+              >
+                ⏰
+              </div>
+              <h2
+                className={`text-2xl font-bold mb-2 ${
+                  theme === "dark" ? "text-white" : "text-gray-900"
+                }`}
+              >
+                Time's Up!
+              </h2>
+              <p
+                className={`mb-6 ${
+                  theme === "dark" ? "text-gray-300" : "text-gray-600"
+                }`}
+              >
+                Your assessment time has ended. What would you like to do?
+              </p>
+
               <div className="flex flex-col space-y-3">
                 <button
                   onClick={handleRetakeAssessment}
